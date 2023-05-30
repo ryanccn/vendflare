@@ -160,9 +160,7 @@ app.get("/v1/oauth/callback", async (ctx) => {
 		return ctx.json({ error: "Not whitelisted" }, 401);
 	}
 
-	console.log("before user hash");
 	const saltedUserHash = await getSaltedUserHash(userId, ctx.env.SECRETS_SALT);
-	console.log("after user hash");
 	let secret = await ctx.env.KV.get(`secret:${saltedUserHash}`);
 
 	if (!secret) {
