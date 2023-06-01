@@ -1,17 +1,15 @@
 import { MiddlewareHandler } from "hono";
 import type { Bindings, Variables } from "./bindings";
 
+import { toHex } from "./utils";
+
 export const sha512 = async (data: string) => {
 	const digest = await crypto.subtle.digest(
 		"SHA-512",
 		new TextEncoder().encode(data)
 	);
 
-	const hash = [...new Uint8Array(digest)]
-		.map((x) => x.toString(16).padStart(2, "0"))
-		.join("");
-
-	return hash;
+	return toHex(digest);
 };
 
 export const getSaltedUserHash = async (userId: string, salt: string) => {

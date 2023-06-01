@@ -3,8 +3,9 @@ import { Hono } from "hono";
 import { logger } from "hono/logger";
 import { cors } from "hono/cors";
 import { auth, getSaltedUserHash, requireAuth } from "./auth";
-
 import type { Bindings, Variables } from "./bindings";
+
+import { toHex } from "./utils";
 
 const app = new Hono<{ Bindings: Bindings; Variables: Variables }>();
 
@@ -170,9 +171,7 @@ app.get("/v1/oauth/callback", async (ctx) => {
 		const randValues = new Uint8Array(64);
 		crypto.getRandomValues(randValues);
 
-		secret = [...randValues]
-			.map((x) => x.toString(16).padStart(2, "0"))
-			.join("");
+		secret = toHex(randValues);
 		await ctx.env.KV.put(`secret:${saltedUserHash}`, secret);
 	}
 

@@ -11,8 +11,8 @@ dependencies:
 
 devDependencies:
   '@cloudflare/workers-types':
-    specifier: ^4.20230419.0
-    version: 4.20230419.0
+    specifier: ^4.20230518.0
+    version: 4.20230518.0
   '@typescript-eslint/eslint-plugin':
     specifier: ^5.59.8
     version: 5.59.8(@typescript-eslint/parser@5.59.8)(eslint@8.41.0)(typescript@5.0.4)
@@ -29,8 +29,8 @@ devDependencies:
     specifier: ^5.0.4
     version: 5.0.4
   wrangler:
-    specifier: ^3.0.0
-    version: 3.0.0
+    specifier: ^3.0.1
+    version: 3.0.1
 
 packages:
 
@@ -85,8 +85,8 @@ packages:
     dev: true
     optional: true
 
-  /@cloudflare/workers-types@4.20230419.0:
-    resolution: {integrity: sha512-MfNBlHrI/ekRkbLtdAo23D4hkXF+3QD92OCwuXxCUK73HtMHuBqkMp9T/8KFbKNRCnz7PzUderc7Jr5m3eeW3g==}
+  /@cloudflare/workers-types@4.20230518.0:
+    resolution: {integrity: sha512-A0w1V+5SUawGaaPRlhFhSC/SCDT9oQG8TMoWOKFLA4qbqagELqEAFD4KySBIkeVOvCBLT1DZSYBMCxbXddl0kw==}
     dev: true
 
   /@esbuild-plugins/node-globals-polyfill@0.1.1(esbuild@0.16.3):
@@ -1314,8 +1314,8 @@ packages:
     resolution: {integrity: sha512-OWND8ei3VtNC9h7V60qff3SVobHr996CTwgxubgyQYEpg290h9J0buyECNNJexkFm5sOajh5G116RYA1c8ZMSw==}
     dev: true
 
-  /node-abi@3.40.0:
-    resolution: {integrity: sha512-zNy02qivjjRosswoYmPi8hIKJRr8MpQyeKT6qlcq/OnOgA3Rhoae+IYOqsM9V5+JnHWmxKnWOT2GxvtqdtOCXA==}
+  /node-abi@3.43.0:
+    resolution: {integrity: sha512-QB0MMv+tn9Ur2DtJrc8y09n0n6sw88CyDniWSX2cHW10goQXYPK9ZpFJOktDS4ron501edPX6h9i7Pg+RnH5nQ==}
     engines: {node: '>=10'}
     dependencies:
       semver: 7.5.1
@@ -1410,7 +1410,7 @@ packages:
       minimist: 1.2.8
       mkdirp-classic: 0.5.3
       napi-build-utils: 1.0.2
-      node-abi: 3.40.0
+      node-abi: 3.43.0
       pump: 3.0.0
       rc: 1.2.8
       simple-get: 4.0.1
@@ -1752,8 +1752,8 @@ packages:
       '@cloudflare/workerd-windows-64': 1.20230518.0
     dev: true
 
-  /wrangler@3.0.0:
-    resolution: {integrity: sha512-azppXJjEQeaVg3wxFZJOGDGtpR8e9clHr2aHuanGHOk9vX3gvesCv97BF/n8qh1Y1d7vDKOBdfQW3UOYZNFGNw==}
+  /wrangler@3.0.1:
+    resolution: {integrity: sha512-YamXlRjkMO/V3Fvq7IC9H9GDWIbNGc4IV3l1Z5q45XYTWxUYbkwXyiTAfpmqhyl5wx+XEPKe3k/ubqmW+r63yQ==}
     engines: {node: '>=16.13.0'}
     hasBin: true
     dependencies:
