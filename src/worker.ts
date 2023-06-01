@@ -23,7 +23,9 @@ app.use(
 
 app.use("*", auth);
 
-app.get("/", (c) => c.redirect(c.env.ROOT_REDIRECT, 302));
+app.get("/", (c) =>
+	c.redirect(c.env.ROOT_REDIRECT || "https://vencord.dev/", 302)
+);
 
 app.use("/v1/settings", requireAuth);
 
@@ -105,6 +107,7 @@ app.delete("/v1/settings", async (ctx) => {
 	return ctx.body(null, 204);
 });
 
+app.head("/v1", (c) => c.body(null, 200));
 app.get("/v1", (c) => c.json({ ping: "pong" }));
 
 app.delete("/v1", requireAuth);

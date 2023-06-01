@@ -1,7 +1,7 @@
 export type Bindings = {
 	KV: KVNamespace;
 
-	ROOT_REDIRECT: string;
+	ROOT_REDIRECT?: string;
 
 	DISCORD_CLIENT_ID: string;
 	DISCORD_CLIENT_SECRET: string;
