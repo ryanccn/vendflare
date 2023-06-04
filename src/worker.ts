@@ -30,20 +30,6 @@ app.get("/", (c) =>
 
 app.use("/v1/settings", requireAuth);
 
-app.head("/v1/settings", async (ctx) => {
-	const saltedUserHash = ctx.get("saltedUserHash")!;
-
-	const written = await ctx.env.KV.get(`settings:${saltedUserHash}:written`);
-
-	if (!written) {
-		return ctx.notFound();
-	}
-
-	ctx.header("etag", written);
-
-	return ctx.body(null, 204);
-});
-
 app.get("/v1/settings", async (ctx) => {
 	const saltedUserHash = ctx.get("saltedUserHash")!;
 
@@ -108,7 +94,6 @@ app.delete("/v1/settings", async (ctx) => {
 	return ctx.body(null, 204);
 });
 
-app.head("/v1", (c) => c.body(null, 200));
 app.get("/v1", (c) => c.json({ ping: "pong" }));
 
 app.delete("/v1", requireAuth);
