@@ -18,10 +18,11 @@ jobs:
           node-version: 20
       - name: Install pnpm
         uses: pnpm/action-setup@v2
-      - name: Install dependencies
-        run: pnpm install
 
-      - name: Publish
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Deploy
         run: pnpm run deploy
         env:
           CLOUDFLARE_API_TOKEN: ${{ secrets.CF_API_TOKEN }}
