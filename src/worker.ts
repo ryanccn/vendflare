@@ -4,7 +4,7 @@ import { logger } from "hono/logger";
 import { cors } from "hono/cors";
 
 import { auth, requireAuth } from "./auth";
-import { del, get, put } from "./durable";
+import { get, put, del, delAll } from "./durable";
 
 import { toHex } from "./utils";
 import type { Bindings, Variables } from "./env";
@@ -36,8 +36,8 @@ app.get("/v1/settings", async (ctx) => {
 	const durableObject = ctx.get("durableObject")!;
 
 	const [settings, written] = await Promise.all([
-		get(durableObject, `settings:value`),
-		get(durableObject, `settings:written`),
+		get(durableObject, "settings:value"),
+		get(durableObject, "settings:written"),
 	]);
 
 	if (!settings || !written) {
@@ -78,8 +78,8 @@ app.put("/v1/settings", async (ctx) => {
 	const now = Date.now();
 
 	await Promise.all([
-		put(durableObject, `settings:value`, await ctx.req.arrayBuffer()),
-		put(durableObject, `settings:written`, `${now}`),
+		put(durableObject, "settings:value", await ctx.req.arrayBuffer()),
+		put(durableObject, "settings:written", `${now}`),
 	]);
 
 	return ctx.json({ written: now });
@@ -89,8 +89,8 @@ app.delete("/v1/settings", async (ctx) => {
 	const durableObject = ctx.get("durableObject")!;
 
 	await Promise.all([
-		del(durableObject, `settings:value`),
-		del(durableObject, `settings:written`),
+		del(durableObject, "settings:value"),
+		del(durableObject, "settings:written"),
 	]);
 
 	return ctx.body(null, 204);
@@ -102,12 +102,7 @@ app.delete("/v1/", requireAuth);
 app.delete("/v1/", async (ctx) => {
 	const durableObject = ctx.get("durableObject")!;
 
-	await Promise.all([
-		del(durableObject, `secret`),
-		del(durableObject, `settings:value`),
-		del(durableObject, `settings:written`),
-	]);
-
+	await delAll(durableObject);
 	return ctx.body(null, 204);
 });
 

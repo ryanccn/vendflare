@@ -15,6 +15,11 @@ export class UserData {
 
 		this.router = new Hono();
 
+		this.router.delete("/", async (c) => {
+			await this.state.storage.deleteAll();
+			return c.json({ ok: true });
+		});
+
 		this.router
 			.get("/:key", async (c) => {
 				const key = c.req.param("key");
@@ -43,26 +48,22 @@ export class UserData {
 	}
 }
 
-const rawGet = async (object: DurableObjectStub, key: string) => {
+export const get = async <K extends keyof UserDataType>(
+	object: DurableObjectStub,
+	key: K
+): Promise<UserDataType[K] | null> => {
 	const req = new Request(
 		`https://kv.vendflare.ryanccn.dev/${encodeURIComponent(key)}`
 	);
 	const res = await object.fetch(req);
 
 	if (!res.ok) {
-		throw new Error(`Failed to get key "${key}" from Durable Object`);
+		throw new Error(
+			`Failed to get key "${key}" from Durable Object ${object.id}`
+		);
 	}
 
-	const data = (await res.json()) as { value: unknown };
-
-	return data.value;
-};
-
-export const get = async <K extends keyof UserDataType>(
-	object: DurableObjectStub,
-	key: K
-): Promise<UserDataType[K] | null> => {
-	const value = await rawGet(object, key);
+	const { value } = (await res.json()) as { value: unknown };
 
 	if (typeof value === "undefined" || value === null) return null;
 
@@ -86,7 +87,9 @@ export const put = async <K extends keyof UserDataType>(
 	const res = await object.fetch(req);
 
 	if (!res.ok) {
-		throw new Error(`Failed to set key "${key}" on Durable Object`);
+		throw new Error(
+			`Failed to set key "${key}" on Durable Object ${object.id}`
+		);
 	}
 };
 
@@ -101,6 +104,21 @@ export const del = async <K extends keyof UserDataType>(
 	const res = await object.fetch(req);
 
 	if (!res.ok) {
-		throw new Error(`Failed to delete key "${key}" frin Durable Object`);
+		throw new Error(
+			`Failed to delete key "${key}" from Durable Object ${object.id}`
+		);
+	}
+};
+
+export const delAll = async (object: DurableObjectStub) => {
+	const req = new Request(`https://kv.vendflare.ryanccn.dev/`, {
+		method: "DELETE",
+	});
+	const res = await object.fetch(req);
+
+	if (!res.ok) {
+		throw new Error(
+			`Failed to delete all keys from Durable Object ${object.id}`
+		);
 	}
 };
