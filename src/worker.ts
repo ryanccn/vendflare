@@ -165,7 +165,6 @@ app.get("/v1/oauth/callback", async (ctx) => {
 
 		secret = toHex(randValues);
 		await put(durableObject, "secret", secret);
-		console.log(`put secret ${secret}`);
 	}
 
 	return ctx.json({ secret });

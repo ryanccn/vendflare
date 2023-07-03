@@ -6,11 +6,6 @@ workers_dev = false
 send_metrics = false
 keep_vars = true
 
-[[kv_namespaces]]
-binding = "KV"
-id = "b6aa428038974b3b825ef772b01a33b1"
-preview_id = "f484bf29e0dd4eb2914abc67406dd9df"
-
 [[durable_objects.bindings]]
 name = "USER_DATA"
 class_name = "UserData"

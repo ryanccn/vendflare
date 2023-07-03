@@ -1,5 +1,4 @@
 export type Env = {
-	KV: KVNamespace;
 	USER_DATA: DurableObjectNamespace;
 
 	ROOT_REDIRECT?: string;
