@@ -98,8 +98,8 @@ app.delete("/v1/settings", async (ctx) => {
 
 app.get("/v1", (c) => c.json({ ping: "pong" }));
 
-app.delete("/v1", requireAuth);
-app.delete("/v1", async (ctx) => {
+app.delete("/v1/", requireAuth);
+app.delete("/v1/", async (ctx) => {
 	const durableObject = ctx.get("durableObject")!;
 
 	await Promise.all([
