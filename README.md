@@ -21,8 +21,6 @@ $ pnpm deploy
 
 Then [register a Discord application](https://discord.com/developers/applications) and set the OAuth client ID and secret as environment variables on your worker as `DISCORD_CLIENT_ID` and `DISCORD_CLIENT_SECRET`, respectively.
 
-Set `SECRETS_SALT` and `SETTINGS_SALT` to be securely and randomly generated values. Recommended is `openssl rand -hex 64`.
-
 You can set `ALLOWED_USERS` as a comma-separated list of user IDs to only allow some users to use this instance.
 
 You can also set a `SIZE_LIMIT` to limit the size of the configuration (so that people don't use it as a cloud drive).

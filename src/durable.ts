@@ -27,7 +27,6 @@ export class UserData {
 				const { value } = await c.req.json();
 
 				await this.state.storage.put(key, value);
-				this.state.storage.sync();
 
 				return c.json({ ok: true });
 			})

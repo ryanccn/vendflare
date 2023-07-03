@@ -3,7 +3,7 @@ import { Hono } from "hono";
 import { logger } from "hono/logger";
 import { cors } from "hono/cors";
 
-import { auth, getSaltedUserHash, requireAuth } from "./auth";
+import { auth, requireAuth } from "./auth";
 import { del, get, put } from "./durable";
 
 import { toHex } from "./utils";
@@ -152,9 +152,8 @@ app.get("/v1/oauth/callback", async (ctx) => {
 		return ctx.json({ error: "Not whitelisted" }, 401);
 	}
 
-	const saltedUserHash = await getSaltedUserHash(userId, ctx.env.SECRETS_SALT);
 	const durableObject = ctx.env.USER_DATA.get(
-		ctx.env.USER_DATA.idFromName(saltedUserHash)
+		ctx.env.USER_DATA.idFromName(userId)
 	);
 
 	let secret = await get(durableObject, "secret");
