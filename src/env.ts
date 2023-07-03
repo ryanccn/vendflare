@@ -1,5 +1,6 @@
-export type Bindings = {
+export type Env = {
 	KV: KVNamespace;
+	USER_DATA: DurableObjectNamespace;
 
 	ROOT_REDIRECT?: string;
 
@@ -14,7 +15,10 @@ export type Bindings = {
 	ALLOWED_USERS?: string;
 };
 
+export type Bindings = Env;
+
 export type Variables = {
 	userId: string | null;
 	saltedUserHash: string | null;
+	durableObject: DurableObjectStub | null;
 };

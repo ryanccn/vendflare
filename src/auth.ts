@@ -1,6 +1,7 @@
 import { MiddlewareHandler } from "hono";
-import type { Bindings, Variables } from "./bindings";
+import { get } from "./durable";
 
+import type { Bindings, Variables } from "./env";
 import { toHex } from "./utils";
 
 export const sha512 = async (data: string) => {
@@ -22,6 +23,7 @@ export const auth: MiddlewareHandler<{
 }> = async (c, next) => {
 	c.set("userId", null);
 	c.set("saltedUserHash", null);
+	c.set("durableObject", null);
 
 	const authHeader = c.req.headers.get("authorization");
 	if (authHeader === null) {
@@ -52,8 +54,11 @@ export const auth: MiddlewareHandler<{
 		return;
 	}
 
-	const storedSecretKey = `secret:${await sha512(c.env.SECRETS_SALT + userId)}`;
-	const storedSecret = await c.env.KV.get(storedSecretKey);
+	const saltedUserHash = await getSaltedUserHash(userId, c.env.SETTINGS_SALT);
+	const durableObject = c.env.USER_DATA.get(
+		c.env.USER_DATA.idFromName(saltedUserHash)
+	);
+	const storedSecret = await get(durableObject, "secret");
 
 	if (!storedSecret || storedSecret !== secret) {
 		await next();
@@ -61,7 +66,9 @@ export const auth: MiddlewareHandler<{
 	}
 
 	c.set("userId", userId);
-	c.set("saltedUserHash", await getSaltedUserHash(userId, c.env.SETTINGS_SALT));
+	c.set("saltedUserHash", saltedUserHash);
+
+	c.set("durableObject", durableObject);
 
 	await next();
 };
