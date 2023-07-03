@@ -36,7 +36,7 @@ app.get("/v1/settings", async (ctx) => {
 	const durableObject = ctx.get("durableObject")!;
 
 	const [settings, written] = await Promise.all([
-		get(durableObject, `settings:value`, "arraybuffer"),
+		get(durableObject, `settings:value`),
 		get(durableObject, `settings:written`),
 	]);
 
@@ -78,8 +78,8 @@ app.put("/v1/settings", async (ctx) => {
 	const now = Date.now();
 
 	await Promise.all([
-		put(durableObject, `settings:value`, ctx.req.arrayBuffer()),
-		put(durableObject, `settings:written`, now),
+		put(durableObject, `settings:value`, await ctx.req.arrayBuffer()),
+		put(durableObject, `settings:written`, `${now}`),
 	]);
 
 	return ctx.json({ written: now });

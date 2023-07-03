@@ -1,5 +1,11 @@
 import { Hono } from "hono";
 
+type UserDataType = {
+	secret: string;
+	"settings:value": ArrayBuffer;
+	"settings:written": string;
+};
+
 export class UserData {
 	state: DurableObjectState;
 	router: Hono;
@@ -53,54 +59,23 @@ const rawGet = async (object: DurableObjectStub, key: string) => {
 	return data.value;
 };
 
-export async function get(
+export const get = async <K extends keyof UserDataType>(
 	object: DurableObjectStub,
-	key: string,
-	type?: "string"
-): Promise<string | null>;
-export async function get(
-	object: DurableObjectStub,
-	key: string,
-	type: "number"
-): Promise<number | null>;
-export async function get(
-	object: DurableObjectStub,
-	key: string,
-	type: "arraybuffer"
-): Promise<ArrayBuffer | null>;
-export async function get(
-	object: DurableObjectStub,
-	key: string,
-	type: "string" | "arraybuffer" | "number" = "string"
-): Promise<string | ArrayBuffer | number | null> {
+	key: K
+): Promise<UserDataType[K] | null> => {
 	const value = await rawGet(object, key);
 
 	if (typeof value === "undefined" || value === null) return null;
 
-	if (type === "string" && typeof value !== "string") {
-		console.error({ type, value });
-		throw new Error(`Key "${key}" is not string as required`);
-	} else if (type === "number" && typeof value !== "number") {
-		console.error({ type, value });
-		throw new Error(`Key "${key}" is not string as required`);
-	} else if (type === "arraybuffer" && !(value instanceof ArrayBuffer)) {
-		console.error({ type, value });
-		throw new Error(`Key "${key}" is not ArrayBuffer as required`);
-	}
-
 	// eslint-disable-next-line @typescript-eslint/no-explicit-any
 	return value as any;
-}
+};
 
-export const put = async (
+export const put = async <K extends keyof UserDataType>(
 	object: DurableObjectStub,
-	key: string,
-	value: unknown
+	key: K,
+	value: UserDataType[K]
 ) => {
-	if (value instanceof Promise) {
-		value = await value;
-	}
-
 	const req = new Request(
 		`https://kv.vendflare.ryanccn.dev/${encodeURIComponent(key)}`,
 		{
@@ -116,7 +91,10 @@ export const put = async (
 	}
 };
 
-export const del = async (object: DurableObjectStub, key: string) => {
+export const del = async <K extends keyof UserDataType>(
+	object: DurableObjectStub,
+	key: K
+) => {
 	const req = new Request(
 		`https://kv.vendflare.ryanccn.dev/${encodeURIComponent(key)}`,
 		{ method: "DELETE" }
