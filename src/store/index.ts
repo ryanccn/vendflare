@@ -19,9 +19,9 @@ export class UserDataStore {
 			this.do = env.USER_DATA;
 		} else if (env.KV) {
 			this.kv = env.KV;
+		} else {
+			throw new Error("No supported storage backends found!");
 		}
-
-		throw new Error("No supported storage backends found!");
 	}
 
 	isKV(): this is { kv: KVNamespace } {
@@ -44,17 +44,19 @@ export class UserDataStore {
 			return doBackend.get(obj, key);
 		} else if (this.isKV()) {
 			return kvBackend.get(this.kv, this.userId, key);
+		} else {
+			throw new Error("No supported storage backends found!");
 		}
-
-		throw new Error("No supported storage backends found!");
 	}
 
 	async put<K extends keyof UserDataType>(key: K, value: UserDataType[K]) {
 		if (this.isDO()) {
 			const obj = this.#getUserDurableObject();
 			await doBackend.put(obj, key, value);
+			return;
 		} else if (this.isKV()) {
 			await kvBackend.put(this.kv, this.userId, key, value);
+			return;
 		}
 
 		throw new Error("No supported storage backends found!");
@@ -66,9 +68,9 @@ export class UserDataStore {
 			await doBackend.del(obj, key);
 		} else if (this.isKV()) {
 			await kvBackend.del(this.kv, this.userId, key);
+		} else {
+			throw new Error("No supported storage backends found!");
 		}
-
-		throw new Error("No supported storage backends found!");
 	}
 
 	async delAll() {
@@ -79,8 +81,8 @@ export class UserDataStore {
 			for (const key of userDataKeys) {
 				await kvBackend.del(this.kv, this.userId, key);
 			}
+		} else {
+			throw new Error("No supported storage backends found!");
 		}
-
-		throw new Error("No supported storage backends found!");
 	}
 }
