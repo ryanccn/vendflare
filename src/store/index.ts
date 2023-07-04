@@ -25,10 +25,10 @@ export class UserDataStore {
 	}
 
 	isKV(): this is { kv: KVNamespace } {
-		return !VENDFLARE_DO_ONLY && !!this.kv;
+		return !!this.kv;
 	}
 	isDO(): this is { do: DurableObjectNamespace } {
-		return !VENDFLARE_KV_ONLY && !!this.do;
+		return !!this.do;
 	}
 
 	#getUserDurableObject() {

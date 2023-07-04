@@ -1,9 +1,24 @@
 {
-	"extends": "./tsconfig.json",
 	"compilerOptions": {
+		"module": "es2022",
+		"target": "es2022",
+		"lib": ["es2022"],
+		"jsx": "react",
+		"moduleResolution": "node",
+		"types": ["node"],
+		"resolveJsonModule": true,
 		"allowJs": true,
 		"checkJs": true,
-		"types": ["@types/node"]
+		"noEmit": true,
+		"isolatedModules": true,
+		"allowSyntheticDefaultImports": true,
+		"esModuleInterop": true,
+		"forceConsistentCasingInFileNames": true,
+		"strict": true,
+		"strictNullChecks": true,
+		"useUnknownInCatchVariables": true,
+		"skipLibCheck": true
 	},
-	"include": ["build.mjs"]
+	"include": ["build.mts"],
+	"exclude": ["dist", "node_modules", "**/node_modules", "src"]
 }
