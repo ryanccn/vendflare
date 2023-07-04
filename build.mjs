@@ -2,7 +2,7 @@
 
 import { build } from "esbuild";
 
-import { cyan, green, magenta } from "kleur/colors";
+import { cyan, dim, green, magenta } from "kleur/colors";
 import { readFile } from "node:fs/promises";
 
 /**
@@ -50,7 +50,7 @@ await build({
 	},
 });
 
-console.log(`${cyan("Full build")}     dist/worker.js     ${cyan(await size("dist/worker.js"))}`);
+console.log(`${cyan("Full build")}     ${dim("dist/")}worker.js     ${cyan(await size("dist/worker.js"))}`);
 
 await build({
 	...sharedOptions,
@@ -62,7 +62,7 @@ await build({
 	},
 });
 
-console.log(`${magenta("KV-only build")}  dist/worker.kv.js  ${magenta(await size("dist/worker.kv.js"))}`);
+console.log(`${magenta("KV-only build")}  ${dim("dist/")}worker.kv.js  ${magenta(await size("dist/worker.kv.js"))}`);
 
 await build({
 	...sharedOptions,
@@ -73,4 +73,4 @@ await build({
 	},
 });
 
-console.log(`${green("DO-only build")}  dist/worker.do.js  ${green(await size("dist/worker.do.js"))}`);
+console.log(`${green("DO-only build")}  ${dim("dist/")}worker.do.js  ${green(await size("dist/worker.do.js"))}`);
