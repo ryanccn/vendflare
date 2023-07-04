@@ -1,6 +1,5 @@
 import { Hono } from "hono";
 
-import { logger } from "hono/logger";
 import { cors } from "hono/cors";
 
 import { auth, requireAuth } from "./auth";
@@ -11,7 +10,6 @@ import type { Bindings, Variables } from "./env";
 
 const app = new Hono<{ Bindings: Bindings; Variables: Variables }>();
 
-app.use("*", logger());
 app.use(
 	"*",
 	cors({
