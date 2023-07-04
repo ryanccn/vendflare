@@ -2,8 +2,9 @@
 
 import { build } from "esbuild";
 
-import { cyan, dim, green, magenta } from "kleur/colors";
+import { bold, cyan, dim, green, magenta } from "kleur/colors";
 import { readFile } from "node:fs/promises";
+import { execa } from "execa";
 
 /**
  * https://stackoverflow.com/a/14919494
@@ -41,12 +42,16 @@ const sharedOptions = {
 	minify: true,
 };
 
+const revision = await execa("git", ["rev-parse", "--short", "HEAD"]).then((p) => p.stdout);
+
+console.log(bold(`vendflare@${revision}`));
 await build({
 	...sharedOptions,
 	outfile: "dist/worker.js",
 	define: {
 		VENDFLARE_KV_ONLY: "false",
 		VENDFLARE_DO_ONLY: "false",
+		VENDFLARE_REVISION: JSON.stringify(revision),
 	},
 });
 
@@ -59,6 +64,7 @@ await build({
 	define: {
 		VENDFLARE_KV_ONLY: "true",
 		VENDFLARE_DO_ONLY: "false",
+		VENDFLARE_REVISION: JSON.stringify(revision),
 	},
 });
 
@@ -70,6 +76,7 @@ await build({
 	define: {
 		VENDFLARE_KV_ONLY: "false",
 		VENDFLARE_DO_ONLY: "true",
+		VENDFLARE_REVISION: JSON.stringify(revision),
 	},
 });
 

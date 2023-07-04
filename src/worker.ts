@@ -20,7 +20,7 @@ app.use(
 );
 
 app.use("*", async (c, next) => {
-	c.header("x-powered-by", "vendflare");
+	c.header("x-powered-by", `vendflare@${VENDFLARE_REVISION}`);
 	await next();
 });
 
