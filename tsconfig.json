@@ -1,13 +1,12 @@
 {
 	"compilerOptions": {
-		"target": "es2021",
-		"lib": ["es2021"],
+		"module": "es2022",
+		"target": "es2022",
+		"lib": ["es2022"],
 		"jsx": "react",
 
-		"module": "es2022",
 		"moduleResolution": "node",
-		"baseUrl": "src",
-		"paths": { "~/*": ["*"] },
+		"paths": { "~/*": ["./src/*"] },
 		"types": ["@cloudflare/workers-types"],
 		"resolveJsonModule": true,
 

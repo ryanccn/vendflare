@@ -1,15 +1,16 @@
 import { Hono } from "hono";
 
-import { logger } from "hono/logger";
 import { cors } from "hono/cors";
-import { auth, getSaltedUserHash, requireAuth } from "./auth";
-import type { Bindings, Variables } from "./bindings";
 
+import { auth, requireAuth } from "./auth";
+import { UserDataStore } from "./store";
+
+import { inflateSync as inflate } from "fflate";
 import { toHex } from "./utils";
+import type { Bindings, Variables } from "./env";
 
 const app = new Hono<{ Bindings: Bindings; Variables: Variables }>();
 
-app.use("*", logger());
 app.use(
 	"*",
 	cors({
@@ -22,6 +23,11 @@ app.use(
 	})
 );
 
+app.use("*", async (c, next) => {
+	c.header("x-powered-by", "vendflare");
+	await next();
+});
+
 app.use("*", auth);
 
 app.get("/", (c) =>
@@ -31,11 +37,11 @@ app.get("/", (c) =>
 app.use("/v1/settings", requireAuth);
 
 app.get("/v1/settings", async (ctx) => {
-	const saltedUserHash = ctx.get("saltedUserHash")!;
+	const store = ctx.get("store")!;
 
 	const [settings, written] = await Promise.all([
-		ctx.env.KV.get(`settings:${saltedUserHash}:value`, "arrayBuffer"),
-		ctx.env.KV.get(`settings:${saltedUserHash}:written`),
+		store.get("settings:value"),
+		store.get("settings:written"),
 	]);
 
 	if (!settings || !written) {
@@ -54,7 +60,7 @@ app.get("/v1/settings", async (ctx) => {
 });
 
 app.put("/v1/settings", async (ctx) => {
-	const saltedUserHash = ctx.get("saltedUserHash")!;
+	const store = ctx.get("store")!;
 
 	if (ctx.req.headers.get("content-type") !== "application/octet-stream") {
 		return ctx.json(
@@ -75,20 +81,24 @@ app.put("/v1/settings", async (ctx) => {
 
 	const now = Date.now();
 
+	const rawData = await ctx.req.arrayBuffer();
+	const decompressed = inflate(new Uint8Array(rawData));
+	const dataString = new TextDecoder().decode(decompressed);
+
 	await Promise.all([
-		ctx.env.KV.put(`settings:${saltedUserHash}:value`, ctx.req.body),
-		ctx.env.KV.put(`settings:${saltedUserHash}:written`, `${now}`),
+		store.put("settings:value", dataString),
+		store.put("settings:written", `${now}`),
 	]);
 
 	return ctx.json({ written: now });
 });
 
 app.delete("/v1/settings", async (ctx) => {
-	const saltedUserHash = ctx.get("saltedUserHash")!;
+	const store = ctx.get("store")!;
 
 	await Promise.all([
-		ctx.env.KV.delete(`settings:${saltedUserHash}:value`),
-		ctx.env.KV.delete(`settings:${saltedUserHash}:written`),
+		store.del("settings:value"),
+		store.del("settings:written"),
 	]);
 
 	return ctx.body(null, 204);
@@ -96,15 +106,11 @@ app.delete("/v1/settings", async (ctx) => {
 
 app.get("/v1", (c) => c.json({ ping: "pong" }));
 
-app.delete("/v1", requireAuth);
-app.delete("/v1", async (ctx) => {
-	const saltedUserHash = ctx.get("saltedUserHash")!;
-	await Promise.all([
-		ctx.env.KV.delete(`secret:${saltedUserHash}`),
-		ctx.env.KV.delete(`settings:${saltedUserHash}:value`),
-		ctx.env.KV.delete(`settings:${saltedUserHash}:written`),
-	]);
+app.delete("/v1/", requireAuth);
+app.delete("/v1/", async (ctx) => {
+	const store = ctx.get("store")!;
 
+	await store.delAll();
 	return ctx.body(null, 204);
 });
 
@@ -149,15 +155,15 @@ app.get("/v1/oauth/callback", async (ctx) => {
 		return ctx.json({ error: "Not whitelisted" }, 401);
 	}
 
-	const saltedUserHash = await getSaltedUserHash(userId, ctx.env.SECRETS_SALT);
-	let secret = await ctx.env.KV.get(`secret:${saltedUserHash}`);
+	const store = new UserDataStore(ctx.env, userId);
+	let secret = await store.get("secret");
 
 	if (!secret) {
 		const randValues = new Uint8Array(64);
 		crypto.getRandomValues(randValues);
 
 		secret = toHex(randValues);
-		await ctx.env.KV.put(`secret:${saltedUserHash}`, secret);
+		await store.put("secret", secret);
 	}
 
 	return ctx.json({ secret });
@@ -171,3 +177,4 @@ app.get("/v1/oauth/settings", async (ctx) => {
 });
 
 export default app;
+export { UserData } from "./store/do";

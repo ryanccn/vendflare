@@ -1,27 +1,14 @@
 import { MiddlewareHandler } from "hono";
-import type { Bindings, Variables } from "./bindings";
+import { UserDataStore } from "./store";
 
-import { toHex } from "./utils";
-
-export const sha512 = async (data: string) => {
-	const digest = await crypto.subtle.digest(
-		"SHA-512",
-		new TextEncoder().encode(data)
-	);
-
-	return toHex(digest);
-};
-
-export const getSaltedUserHash = async (userId: string, salt: string) => {
-	return await sha512(salt + userId);
-};
+import type { Bindings, Variables } from "./env";
 
 export const auth: MiddlewareHandler<{
 	Bindings: Bindings;
 	Variables: Variables;
 }> = async (c, next) => {
 	c.set("userId", null);
-	c.set("saltedUserHash", null);
+	c.set("store", null);
 
 	const authHeader = c.req.headers.get("authorization");
 	if (authHeader === null) {
@@ -52,8 +39,8 @@ export const auth: MiddlewareHandler<{
 		return;
 	}
 
-	const storedSecretKey = `secret:${await sha512(c.env.SECRETS_SALT + userId)}`;
-	const storedSecret = await c.env.KV.get(storedSecretKey);
+	const store = new UserDataStore(c.env, userId);
+	const storedSecret = await store.get("secret");
 
 	if (!storedSecret || storedSecret !== secret) {
 		await next();
@@ -61,7 +48,7 @@ export const auth: MiddlewareHandler<{
 	}
 
 	c.set("userId", userId);
-	c.set("saltedUserHash", await getSaltedUserHash(userId, c.env.SETTINGS_SALT));
+	c.set("store", store);
 
 	await next();
 };

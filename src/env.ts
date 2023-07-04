@@ -1,5 +1,8 @@
-export type Bindings = {
-	KV: KVNamespace;
+import { UserDataStore } from "./store";
+
+export type Env = {
+	KV?: KVNamespace;
+	USER_DATA?: DurableObjectNamespace;
 
 	ROOT_REDIRECT?: string;
 
@@ -7,14 +10,13 @@ export type Bindings = {
 	DISCORD_CLIENT_SECRET: string;
 	DISCORD_REDIRECT_URI: string;
 
-	SECRETS_SALT: string;
-	SETTINGS_SALT: string;
-
 	SIZE_LIMIT?: string;
 	ALLOWED_USERS?: string;
 };
 
+export type Bindings = Env;
+
 export type Variables = {
 	userId: string | null;
-	saltedUserHash: string | null;
+	store: UserDataStore | null;
 };
