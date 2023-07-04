@@ -53,9 +53,7 @@ export const get = async <K extends keyof UserDataType>(
 	const res = await object.fetch(req);
 
 	if (!res.ok) {
-		throw new Error(
-			`Failed to get key "${key}" from Durable Object ${object.id}`
-		);
+		throw new Error(`Failed to get key "${key}" from Durable Object ${object.id}`);
 	}
 
 	const { value } = (await res.json()) as { value: unknown };
@@ -66,11 +64,7 @@ export const get = async <K extends keyof UserDataType>(
 	return value as any;
 };
 
-export const put = async <K extends keyof UserDataType>(
-	object: DurableObjectStub,
-	key: K,
-	value: UserDataType[K]
-) => {
+export const put = async <K extends keyof UserDataType>(object: DurableObjectStub, key: K, value: UserDataType[K]) => {
 	const req = new Request(`${FAKE_HOST}/${encodeURIComponent(key)}`, {
 		method: "PUT",
 		body: JSON.stringify({ value }),
@@ -79,25 +73,18 @@ export const put = async <K extends keyof UserDataType>(
 	const res = await object.fetch(req);
 
 	if (!res.ok) {
-		throw new Error(
-			`Failed to set key "${key}" on Durable Object ${object.id}`
-		);
+		throw new Error(`Failed to set key "${key}" on Durable Object ${object.id}`);
 	}
 };
 
-export const del = async <K extends keyof UserDataType>(
-	object: DurableObjectStub,
-	key: K
-) => {
+export const del = async <K extends keyof UserDataType>(object: DurableObjectStub, key: K) => {
 	const req = new Request(`${FAKE_HOST}/${encodeURIComponent(key)}`, {
 		method: "DELETE",
 	});
 	const res = await object.fetch(req);
 
 	if (!res.ok) {
-		throw new Error(
-			`Failed to delete key "${key}" from Durable Object ${object.id}`
-		);
+		throw new Error(`Failed to delete key "${key}" from Durable Object ${object.id}`);
 	}
 };
 
@@ -108,8 +95,6 @@ export const delAll = async (object: DurableObjectStub) => {
 	const res = await object.fetch(req);
 
 	if (!res.ok) {
-		throw new Error(
-			`Failed to delete all keys from Durable Object ${object.id}`
-		);
+		throw new Error(`Failed to delete all keys from Durable Object ${object.id}`);
 	}
 };

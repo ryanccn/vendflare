@@ -14,11 +14,7 @@ const app = new Hono<{ Bindings: Bindings; Variables: Variables }>();
 app.use(
 	"*",
 	cors({
-		origin: [
-			"https://discord.com",
-			"https://ptb.discord.com",
-			"https://canary.discord.com",
-		],
+		origin: ["https://discord.com", "https://ptb.discord.com", "https://canary.discord.com"],
 		exposeHeaders: ["etag"],
 	})
 );
@@ -30,19 +26,14 @@ app.use("*", async (c, next) => {
 
 app.use("*", auth);
 
-app.get("/", (c) =>
-	c.redirect(c.env.ROOT_REDIRECT || "https://vencord.dev/", 302)
-);
+app.get("/", (c) => c.redirect(c.env.ROOT_REDIRECT || "https://vencord.dev/", 302));
 
 app.use("/v1/settings", requireAuth);
 
 app.get("/v1/settings", async (ctx) => {
 	const store = ctx.get("store")!;
 
-	const [settings, written] = await Promise.all([
-		store.get("settings:value"),
-		store.get("settings:written"),
-	]);
+	const [settings, written] = await Promise.all([store.get("settings:value"), store.get("settings:written")]);
 
 	if (!settings || !written) {
 		return ctx.notFound();
@@ -63,10 +54,7 @@ app.put("/v1/settings", async (ctx) => {
 	const store = ctx.get("store")!;
 
 	if (ctx.req.headers.get("content-type") !== "application/octet-stream") {
-		return ctx.json(
-			{ error: "Content type must be application/octet-stream" },
-			400
-		);
+		return ctx.json({ error: "Content type must be application/octet-stream" }, 400);
 	}
 
 	if (!ctx.req.body) {
@@ -86,10 +74,7 @@ app.put("/v1/settings", async (ctx) => {
 	const dataString = new TextDecoder().decode(decompressed);
 	const minifiedDataString = JSON.stringify(JSON.parse(dataString));
 
-	await Promise.all([
-		store.put("settings:value", minifiedDataString),
-		store.put("settings:written", `${now}`),
-	]);
+	await Promise.all([store.put("settings:value", minifiedDataString), store.put("settings:written", `${now}`)]);
 
 	return ctx.json({ written: now });
 });
@@ -97,10 +82,7 @@ app.put("/v1/settings", async (ctx) => {
 app.delete("/v1/settings", async (ctx) => {
 	const store = ctx.get("store")!;
 
-	await Promise.all([
-		store.del("settings:value"),
-		store.del("settings:written"),
-	]);
+	await Promise.all([store.del("settings:value"), store.del("settings:written")]);
 
 	return ctx.body(null, 204);
 });
@@ -149,10 +131,7 @@ app.get("/v1/oauth/callback", async (ctx) => {
 	}
 
 	const { id: userId } = (await userRes.json()) as { id: string };
-	if (
-		ctx.env.ALLOWED_USERS &&
-		!ctx.env.ALLOWED_USERS.split(",").includes(userId)
-	) {
+	if (ctx.env.ALLOWED_USERS && !ctx.env.ALLOWED_USERS.split(",").includes(userId)) {
 		return ctx.json({ error: "Not whitelisted" }, 401);
 	}
 

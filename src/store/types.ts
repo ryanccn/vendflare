@@ -4,8 +4,4 @@ export type UserDataType = {
 	"settings:written": string;
 };
 
-export const userDataKeys = [
-	"secret",
-	"settings:value",
-	"settings:written",
-] as const;
+export const userDataKeys = ["secret", "settings:value", "settings:written"] as const;

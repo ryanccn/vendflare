@@ -20,10 +20,6 @@ export const put = async <K extends keyof UserDataType>(
 	await kv.put(userId + ":" + key, value);
 };
 
-export const del = async <K extends keyof UserDataType>(
-	kv: KVNamespace,
-	userId: string,
-	key: K
-) => {
+export const del = async <K extends keyof UserDataType>(kv: KVNamespace, userId: string, key: K) => {
 	await kv.delete(userId + ":" + key);
 };
