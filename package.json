@@ -8,6 +8,7 @@
 		"lint": "tsc && eslint ."
 	},
 	"dependencies": {
+		"fflate": "^0.8.0",
 		"hono": "^3.2.7"
 	},
 	"devDependencies": {

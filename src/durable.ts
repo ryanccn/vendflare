@@ -2,7 +2,7 @@ import { Hono } from "hono";
 
 type UserDataType = {
 	secret: string;
-	"settings:value": ArrayBuffer;
+	"settings:value": string;
 	"settings:written": string;
 };
 

@@ -5,6 +5,7 @@ import { cors } from "hono/cors";
 import { auth, requireAuth } from "./auth";
 import { get, put, del, delAll } from "./durable";
 
+import { inflateSync as inflate } from "fflate";
 import { toHex } from "./utils";
 import type { Bindings, Variables } from "./env";
 
@@ -80,8 +81,12 @@ app.put("/v1/settings", async (ctx) => {
 
 	const now = Date.now();
 
+	const rawData = await ctx.req.arrayBuffer();
+	const decompressed = inflate(new Uint8Array(rawData));
+	const dataString = new TextDecoder().decode(decompressed);
+
 	await Promise.all([
-		put(durableObject, "settings:value", await ctx.req.arrayBuffer()),
+		put(durableObject, "settings:value", dataString),
 		put(durableObject, "settings:written", `${now}`),
 	]);
 
