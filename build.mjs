@@ -3,8 +3,9 @@
 import { build } from "esbuild";
 
 import { bold, cyan, dim, green, magenta } from "kleur/colors";
-import { readFile } from "node:fs/promises";
 import { execa } from "execa";
+
+import { readFile } from "node:fs/promises";
 
 /**
  * https://stackoverflow.com/a/14919494
@@ -45,6 +46,7 @@ const sharedOptions = {
 const revision = await execa("git", ["rev-parse", "--short", "HEAD"]).then((p) => p.stdout);
 
 console.log(bold(`vendflare@${revision}`));
+
 await build({
 	...sharedOptions,
 	outfile: "dist/worker.js",
@@ -55,7 +57,7 @@ await build({
 	},
 });
 
-console.log(`${cyan("Full build")}     ${dim("dist/")}worker.js     ${cyan(await size("dist/worker.js"))}`);
+console.log(`${cyan("Full build")}          ${dim("dist/")}worker.js          ${cyan(await size("dist/worker.js"))}`);
 
 await build({
 	...sharedOptions,
@@ -68,7 +70,9 @@ await build({
 	},
 });
 
-console.log(`${magenta("KV-only build")}  ${dim("dist/")}worker.kv.js  ${magenta(await size("dist/worker.kv.js"))}`);
+console.log(
+	`${magenta("KV-only build")}       ${dim("dist/")}worker.kv.js       ${magenta(await size("dist/worker.kv.js"))}`
+);
 
 await build({
 	...sharedOptions,
@@ -80,4 +84,52 @@ await build({
 	},
 });
 
-console.log(`${green("DO-only build")}  ${dim("dist/")}worker.do.js  ${green(await size("dist/worker.do.js"))}`);
+console.log(
+	`${green("DO-only build")}       ${dim("dist/")}worker.do.js       ${green(await size("dist/worker.do.js"))}`
+);
+
+await build({
+	...sharedOptions,
+	outfile: "dist/worker.tiny.js",
+	define: {
+		VENDFLARE_KV_ONLY: "false",
+		VENDFLARE_DO_ONLY: "false",
+		VENDFLARE_REVISION: JSON.stringify(revision),
+	},
+	alias: { "hono/cors": "hono/cors", hono: "hono/tiny" },
+});
+
+console.log(
+	`${cyan("Tiny build")}          ${dim("dist/")}worker.tiny.js     ${cyan(await size("dist/worker.tiny.js"))}`
+);
+
+await build({
+	...sharedOptions,
+	entryPoints: ["src/worker.kv.ts"],
+	outfile: "dist/worker.kv.tiny.js",
+	define: {
+		VENDFLARE_KV_ONLY: "true",
+		VENDFLARE_DO_ONLY: "false",
+		VENDFLARE_REVISION: JSON.stringify(revision),
+	},
+	alias: { "hono/cors": "hono/cors", hono: "hono/tiny" },
+});
+
+console.log(
+	`${magenta("KV-only tiny build")}  ${dim("dist/")}worker.kv.tiny.js  ${magenta(await size("dist/worker.kv.tiny.js"))}`
+);
+
+await build({
+	...sharedOptions,
+	outfile: "dist/worker.do.tiny.js",
+	define: {
+		VENDFLARE_KV_ONLY: "false",
+		VENDFLARE_DO_ONLY: "true",
+		VENDFLARE_REVISION: JSON.stringify(revision),
+	},
+	alias: { "hono/cors": "hono/cors", hono: "hono/tiny" },
+});
+
+console.log(
+	`${green("DO-only tiny build")}  ${dim("dist/")}worker.do.tiny.js  ${green(await size("dist/worker.do.tiny.js"))}`
+);

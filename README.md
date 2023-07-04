@@ -39,11 +39,26 @@ It is recommended to try KV first. If major synchronization issues arise (which 
 
 When using KV, use `wrangler.toml` to bind `KV` to the KV on your Cloudflare account.
 
-When using Durable Objects, also use [wrangler.toml](/wrangler.toml) to bind `USER_DATA` to the `UserData` class exported by the worker.
+When using Durable Objects, also use `wrangler.toml` to bind `USER_DATA` to the `UserData` class exported by the worker.
 
 Vendflare will automatically pick up whichever is defined (prioritizing `USER_DATA`) and use it for storage.
 
-In addition, by changing the `main` field in `wrangler.toml` to `dist/worker.kv.js` or `dist/worker.do.js`, you can use builds with smaller bundle sizes that only support one backend, KV or Durable Objects.
+## Builds
+
+By default, the deployed Cloudflare worker uses the `dist/worker.js` build, which supports both KV and Durable Objects. It also uses the default [Hono preset](https://hono.dev/api/presets), which includes a more performant but larger bundle size router (recommended). The tiny preset includes a much smaller but less performant router.
+
+One recommended optimization is to use the build that only supports the storage backend that you are actually using.
+
+| Build                    | KV  | Durable Objects | Hono preset | Size   |
+| ------------------------ | --- | --------------- | ----------- | ------ |
+| `dist/worker.js`         | ✅  | ✅              | Default     | ~31 kB |
+| `dist/worker.do.js`      | ❌  | ✅              | Default     | ~29 kB |
+| `dist/worker.kv.js`      | ✅  | ❌              | Default     | ~30 kB |
+| `dist/worker.tiny.js`    | ✅  | ✅              | Tiny        | ~23 kB |
+| `dist/worker.do.tiny.js` | ❌  | ✅              | Tiny        | ~22 kB |
+| `dist/worker.kv.tiny,js` | ✅  | ❌              | Tiny        | ~23 kB |
+
+You can change what build you use by going to `wrangler.toml` and editing the `main` field to the path of the build that you want to use.
 
 ## License
 

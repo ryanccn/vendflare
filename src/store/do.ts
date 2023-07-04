@@ -1,4 +1,4 @@
-import { Hono } from "hono/tiny";
+import { Hono } from "hono";
 import type { UserDataType } from "./types";
 
 const FAKE_HOST = "https://do.vendflare.ryanccn.dev";
