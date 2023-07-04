@@ -22,6 +22,11 @@ app.use(
 	})
 );
 
+app.use("*", async (c, next) => {
+	c.header("x-powered-by", "vendflare");
+	await next();
+});
+
 app.use("*", auth);
 
 app.get("/", (c) =>
