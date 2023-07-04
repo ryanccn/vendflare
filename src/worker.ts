@@ -73,20 +73,21 @@ app.put("/v1/settings", async (ctx) => {
 		return ctx.json({ error: "No body provided" }, 400);
 	}
 
-	const actualContentLength = parseInt(ctx.req.headers.get("content-length")!);
+	const rawData = await ctx.req.arrayBuffer();
+
 	const sizeLimit = ctx.env.SIZE_LIMIT ? parseInt(ctx.env.SIZE_LIMIT) : null;
-	if (sizeLimit && actualContentLength > sizeLimit) {
+	if (sizeLimit && rawData.byteLength > sizeLimit) {
 		return ctx.json({ error: "Settings are too large" }, 413);
 	}
 
 	const now = Date.now();
 
-	const rawData = await ctx.req.arrayBuffer();
 	const decompressed = inflate(new Uint8Array(rawData));
 	const dataString = new TextDecoder().decode(decompressed);
+	const minifiedDataString = JSON.stringify(JSON.parse(dataString));
 
 	await Promise.all([
-		store.put("settings:value", dataString),
+		store.put("settings:value", minifiedDataString),
 		store.put("settings:written", `${now}`),
 	]);
 
