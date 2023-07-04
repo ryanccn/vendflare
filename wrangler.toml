@@ -1,10 +1,13 @@
 name = "vendflare"
-main = "src/worker.ts"
+main = "dist/worker.js"
 compatibility_date = "2023-05-18"
 
 workers_dev = false
 send_metrics = false
 keep_vars = true
+
+[build]
+command = "pnpm run build"
 
 [[kv_namespaces]]
 binding = "KV"

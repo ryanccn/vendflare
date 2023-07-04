@@ -4,25 +4,22 @@
 		"target": "es2022",
 		"lib": ["es2022"],
 		"jsx": "react",
-
 		"moduleResolution": "node",
 		"paths": { "~/*": ["./src/*"] },
 		"types": ["@cloudflare/workers-types"],
 		"resolveJsonModule": true,
-
 		"allowJs": true,
-		"checkJs": false,
+		"checkJs": true,
 		"noEmit": true,
-
 		"isolatedModules": true,
 		"allowSyntheticDefaultImports": true,
 		"esModuleInterop": true,
 		"forceConsistentCasingInFileNames": true,
-
 		"strict": true,
 		"strictNullChecks": true,
 		"useUnknownInCatchVariables": true,
-
 		"skipLibCheck": true
-	}
+	},
+	"include": ["**/*.ts"],
+	"exclude": ["dist", "node_modules", "**/node_modules"]
 }

@@ -15,9 +15,9 @@ export class UserDataStore {
 		this.env = env;
 		this.userId = userId;
 
-		if (env.USER_DATA) {
+		if (!VENDFLARE_KV_ONLY && env.USER_DATA) {
 			this.do = env.USER_DATA;
-		} else if (env.KV) {
+		} else if (!VENDFLARE_KV_ONLY && env.KV) {
 			this.kv = env.KV;
 		} else {
 			throw new Error("No supported storage backends found!");
@@ -25,10 +25,10 @@ export class UserDataStore {
 	}
 
 	isKV(): this is { kv: KVNamespace } {
-		return !!this.kv;
+		return !VENDFLARE_DO_ONLY && !!this.kv;
 	}
 	isDO(): this is { do: DurableObjectNamespace } {
-		return !!this.do;
+		return !VENDFLARE_KV_ONLY && !!this.do;
 	}
 
 	#getUserDurableObject() {
@@ -36,13 +36,11 @@ export class UserDataStore {
 		return this.do.get(this.do.idFromName(this.userId));
 	}
 
-	async get<K extends keyof UserDataType>(
-		key: K
-	): Promise<UserDataType[K] | null> {
-		if (this.isDO()) {
+	async get<K extends keyof UserDataType>(key: K): Promise<UserDataType[K] | null> {
+		if (!VENDFLARE_KV_ONLY && this.isDO()) {
 			const obj = this.#getUserDurableObject();
 			return doBackend.get(obj, key);
-		} else if (this.isKV()) {
+		} else if (!VENDFLARE_DO_ONLY && this.isKV()) {
 			return kvBackend.get(this.kv, this.userId, key);
 		} else {
 			throw new Error("No supported storage backends found!");
@@ -50,11 +48,11 @@ export class UserDataStore {
 	}
 
 	async put<K extends keyof UserDataType>(key: K, value: UserDataType[K]) {
-		if (this.isDO()) {
+		if (!VENDFLARE_KV_ONLY && this.isDO()) {
 			const obj = this.#getUserDurableObject();
 			await doBackend.put(obj, key, value);
 			return;
-		} else if (this.isKV()) {
+		} else if (!VENDFLARE_DO_ONLY && this.isKV()) {
 			await kvBackend.put(this.kv, this.userId, key, value);
 			return;
 		}
@@ -63,10 +61,10 @@ export class UserDataStore {
 	}
 
 	async del<K extends keyof UserDataType>(key: K) {
-		if (this.isDO()) {
+		if (!VENDFLARE_KV_ONLY && this.isDO()) {
 			const obj = this.#getUserDurableObject();
 			await doBackend.del(obj, key);
-		} else if (this.isKV()) {
+		} else if (!VENDFLARE_DO_ONLY && this.isKV()) {
 			await kvBackend.del(this.kv, this.userId, key);
 		} else {
 			throw new Error("No supported storage backends found!");
@@ -74,10 +72,10 @@ export class UserDataStore {
 	}
 
 	async delAll() {
-		if (this.isDO()) {
+		if (!VENDFLARE_KV_ONLY && this.isDO()) {
 			const obj = this.#getUserDurableObject();
 			await doBackend.delAll(obj);
-		} else if (this.isKV()) {
+		} else if (!VENDFLARE_DO_ONLY && this.isKV()) {
 			for (const key of userDataKeys) {
 				await kvBackend.del(this.kv, this.userId, key);
 			}

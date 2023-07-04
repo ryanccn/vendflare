@@ -8,7 +8,7 @@ The [official implementation](https://github.com/Vencord/Backend) uses Go and Re
 
 Deploy this worker on Cloudflare using [wrangler](https://developers.cloudflare.com/workers/wrangler/).
 
-Change the bindings of the KV in `wrangler.toml` to the KV IDs on your own account. You could also use [Durable Objects](https://developers.cloudflare.com/workers/learning/using-durable-objects/), which require subscribing to a paid plan on Cloudflare Workers; see [Storage Backends](#storage-backends) for more information.
+Change the bindings of the KV in `wrangler.toml` to the KV IDs on your own account. You could also use [Durable Objects](https://developers.cloudflare.com/workers/learning/using-durable-objects/), which require subscribing to a paid plan on Cloudflare Workers; see [Storage backends](#storage-backends) for more information.
 
 An example of how you would do this:
 
@@ -37,11 +37,13 @@ Durable Objects are **strongly consistent**, located only in one datacenter loca
 
 It is recommended to try KV first. If major synchronization issues arise (which is a small possibility), switch to Durable Objects. **Data is not shared between the two storage backends.**
 
-When using KV, use [wrangler.toml](/wrangler.toml) to bind `KV` to the KV on your Cloudflare account.
+When using KV, use `wrangler.toml` to bind `KV` to the KV on your Cloudflare account.
 
 When using Durable Objects, also use [wrangler.toml](/wrangler.toml) to bind `USER_DATA` to the `UserData` class exported by the worker.
 
 Vendflare will automatically pick up whichever is defined (prioritizing `USER_DATA`) and use it for storage.
+
+In addition, by changing the `main` field in `wrangler.toml` to `dist/worker.kv.js` or `dist/worker.do.js`, you can use builds with smaller bundle sizes that only support one backend, KV or Durable Objects.
 
 ## License
 

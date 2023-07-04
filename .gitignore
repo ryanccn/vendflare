@@ -5,6 +5,7 @@ node_modules/
 
 .dev.vars
 .wrangler/
+dist/
 
 .vscode/
 .idea/
