@@ -1,5 +1,8 @@
+import { UserDataStore } from "./store";
+
 export type Env = {
-	USER_DATA: DurableObjectNamespace;
+	KV?: KVNamespace;
+	USER_DATA?: DurableObjectNamespace;
 
 	ROOT_REDIRECT?: string;
 
@@ -15,5 +18,5 @@ export type Bindings = Env;
 
 export type Variables = {
 	userId: string | null;
-	durableObject: DurableObjectStub | null;
+	store: UserDataStore | null;
 };

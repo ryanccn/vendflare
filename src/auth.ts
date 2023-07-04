@@ -1,5 +1,5 @@
 import { MiddlewareHandler } from "hono";
-import { get } from "./durable";
+import { UserDataStore } from "./store";
 
 import type { Bindings, Variables } from "./env";
 
@@ -8,7 +8,7 @@ export const auth: MiddlewareHandler<{
 	Variables: Variables;
 }> = async (c, next) => {
 	c.set("userId", null);
-	c.set("durableObject", null);
+	c.set("store", null);
 
 	const authHeader = c.req.headers.get("authorization");
 	if (authHeader === null) {
@@ -39,8 +39,8 @@ export const auth: MiddlewareHandler<{
 		return;
 	}
 
-	const durableObject = c.env.USER_DATA.get(c.env.USER_DATA.idFromName(userId));
-	const storedSecret = await get(durableObject, "secret");
+	const store = new UserDataStore(c.env, userId);
+	const storedSecret = await store.get("secret");
 
 	if (!storedSecret || storedSecret !== secret) {
 		await next();
@@ -48,7 +48,7 @@ export const auth: MiddlewareHandler<{
 	}
 
 	c.set("userId", userId);
-	c.set("durableObject", durableObject);
+	c.set("store", store);
 
 	await next();
 };

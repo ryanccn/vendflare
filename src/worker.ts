@@ -3,7 +3,7 @@ import { Hono } from "hono";
 import { cors } from "hono/cors";
 
 import { auth, requireAuth } from "./auth";
-import { get, put, del, delAll } from "./durable";
+import { UserDataStore } from "./store";
 
 import { inflateSync as inflate } from "fflate";
 import { toHex } from "./utils";
@@ -37,11 +37,11 @@ app.get("/", (c) =>
 app.use("/v1/settings", requireAuth);
 
 app.get("/v1/settings", async (ctx) => {
-	const durableObject = ctx.get("durableObject")!;
+	const store = ctx.get("store")!;
 
 	const [settings, written] = await Promise.all([
-		get(durableObject, "settings:value"),
-		get(durableObject, "settings:written"),
+		store.get("settings:value"),
+		store.get("settings:written"),
 	]);
 
 	if (!settings || !written) {
@@ -60,7 +60,7 @@ app.get("/v1/settings", async (ctx) => {
 });
 
 app.put("/v1/settings", async (ctx) => {
-	const durableObject = ctx.get("durableObject")!;
+	const store = ctx.get("store")!;
 
 	if (ctx.req.headers.get("content-type") !== "application/octet-stream") {
 		return ctx.json(
@@ -86,19 +86,19 @@ app.put("/v1/settings", async (ctx) => {
 	const dataString = new TextDecoder().decode(decompressed);
 
 	await Promise.all([
-		put(durableObject, "settings:value", dataString),
-		put(durableObject, "settings:written", `${now}`),
+		store.put("settings:value", dataString),
+		store.put("settings:written", `${now}`),
 	]);
 
 	return ctx.json({ written: now });
 });
 
 app.delete("/v1/settings", async (ctx) => {
-	const durableObject = ctx.get("durableObject")!;
+	const store = ctx.get("store")!;
 
 	await Promise.all([
-		del(durableObject, "settings:value"),
-		del(durableObject, "settings:written"),
+		store.del("settings:value"),
+		store.del("settings:written"),
 	]);
 
 	return ctx.body(null, 204);
@@ -108,9 +108,9 @@ app.get("/v1", (c) => c.json({ ping: "pong" }));
 
 app.delete("/v1/", requireAuth);
 app.delete("/v1/", async (ctx) => {
-	const durableObject = ctx.get("durableObject")!;
+	const store = ctx.get("store")!;
 
-	await delAll(durableObject);
+	await store.delAll();
 	return ctx.body(null, 204);
 });
 
@@ -155,18 +155,15 @@ app.get("/v1/oauth/callback", async (ctx) => {
 		return ctx.json({ error: "Not whitelisted" }, 401);
 	}
 
-	const durableObject = ctx.env.USER_DATA.get(
-		ctx.env.USER_DATA.idFromName(userId)
-	);
-
-	let secret = await get(durableObject, "secret");
+	const store = new UserDataStore(ctx.env, userId);
+	let secret = await store.get("secret");
 
 	if (!secret) {
 		const randValues = new Uint8Array(64);
 		crypto.getRandomValues(randValues);
 
 		secret = toHex(randValues);
-		await put(durableObject, "secret", secret);
+		await store.put("secret", secret);
 	}
 
 	return ctx.json({ secret });
@@ -180,4 +177,4 @@ app.get("/v1/oauth/settings", async (ctx) => {
 });
 
 export default app;
-export { UserData } from "./durable";
+export { UserData } from "./store/do";

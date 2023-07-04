@@ -1,10 +1,7 @@
 import { Hono } from "hono/tiny";
+import type { UserDataType } from "./types";
 
-type UserDataType = {
-	secret: string;
-	"settings:value": string;
-	"settings:written": string;
-};
+const FAKE_HOST = "https://do.vendflare.ryanccn.dev";
 
 export class UserData {
 	state: DurableObjectState;
@@ -52,9 +49,7 @@ export const get = async <K extends keyof UserDataType>(
 	object: DurableObjectStub,
 	key: K
 ): Promise<UserDataType[K] | null> => {
-	const req = new Request(
-		`https://kv.vendflare.ryanccn.dev/${encodeURIComponent(key)}`
-	);
+	const req = new Request(`${FAKE_HOST}/${encodeURIComponent(key)}`);
 	const res = await object.fetch(req);
 
 	if (!res.ok) {
@@ -76,14 +71,11 @@ export const put = async <K extends keyof UserDataType>(
 	key: K,
 	value: UserDataType[K]
 ) => {
-	const req = new Request(
-		`https://kv.vendflare.ryanccn.dev/${encodeURIComponent(key)}`,
-		{
-			method: "PUT",
-			body: JSON.stringify({ value }),
-			headers: { "content-type": "application/json" },
-		}
-	);
+	const req = new Request(`${FAKE_HOST}/${encodeURIComponent(key)}`, {
+		method: "PUT",
+		body: JSON.stringify({ value }),
+		headers: { "content-type": "application/json" },
+	});
 	const res = await object.fetch(req);
 
 	if (!res.ok) {
@@ -97,10 +89,9 @@ export const del = async <K extends keyof UserDataType>(
 	object: DurableObjectStub,
 	key: K
 ) => {
-	const req = new Request(
-		`https://kv.vendflare.ryanccn.dev/${encodeURIComponent(key)}`,
-		{ method: "DELETE" }
-	);
+	const req = new Request(`${FAKE_HOST}/${encodeURIComponent(key)}`, {
+		method: "DELETE",
+	});
 	const res = await object.fetch(req);
 
 	if (!res.ok) {
@@ -111,7 +102,7 @@ export const del = async <K extends keyof UserDataType>(
 };
 
 export const delAll = async (object: DurableObjectStub) => {
-	const req = new Request(`https://kv.vendflare.ryanccn.dev/`, {
+	const req = new Request(`${FAKE_HOST}/`, {
 		method: "DELETE",
 	});
 	const res = await object.fetch(req);
