@@ -32,6 +32,7 @@ export const put = async <K extends keyof UserDataType>(
 	const key2 = userId + ":" + key;
 
 	const res = await fetch(new URL(`/set/${encodeURIComponent(key2)}`, upstash.url), {
+		method: "POST",
 		body: JSON.stringify(value),
 		headers: { Authorization: `Bearer ${upstash.token}`, "Content-Type": "application/json; encoding=utf-8" },
 	});
