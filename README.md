@@ -62,10 +62,10 @@ One recommended optimization is to use the build that only supports the storage 
 | `dist/worker.tiny.js`         | ✅  | ✅              | ✅      | Tiny        | ~26 kB |
 | `dist/worker.kv.tiny.js`      | ✅  | ❌              | ❌      | Tiny        | ~22 kB |
 | `dist/worker.do.tiny.js`      | ❌  | ✅              | ❌      | Tiny        | ~23 kB |
-| `dist/worker.upstash.tiny.js` | ❌  | ❌              | ✅      | iny         | ~23 kB |
+| `dist/worker.upstash.tiny.js` | ❌  | ❌              | ✅      | Tiny        | ~23 kB |
 
 You can change what build you use by going to `wrangler.toml` and editing the `main` field to the path of the build that you want to use.
 
 ## License
 
-AGPL v3
+GNU AGPL v3
