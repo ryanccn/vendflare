@@ -5,8 +5,12 @@ import { BuildOptions, build } from "esbuild";
 import { bold, dim, cyan, green, magenta, blue } from "kleur/colors";
 import { execa } from "execa";
 
-import { readFile } from "node:fs/promises";
+import { readFile, readdir, rm } from "node:fs/promises";
 import { join } from "node:path";
+
+for (const f of await readdir("dist")) {
+	await rm(join("dist", f));
+}
 
 const size = async (f: string) => {
 	const data = await readFile(f);
