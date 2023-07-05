@@ -45,7 +45,7 @@ When using Durable Objects, also use `wrangler.toml` to bind `USER_DATA` to the 
 
 When using Upstash Redis, set the `UPSTASH_REDIS_REST_URL` and `UPSTASH_REDIS_REST_TOKEN` secrets in the Cloudflare dashboard.
 
-Vendflare will automatically pick up whichever is defined (Durable Objects > KV > Upstash Redis) and use it for storage.
+Vendflare will automatically pick up whichever is defined (Durable Objects > KV > Upstash Redis) and use it for storage. If you specify a `STORAGE_BACKEND` variable of either `"do"`, `"kv"`, or `"upstash"`, it will only try to use that backend.
 
 ## Builds
 

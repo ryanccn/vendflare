@@ -17,12 +17,21 @@ export class UserDataStore {
 		this.env = env;
 		this.userId = userId;
 
-		if ((!VENDFLARE_SINGLE_BACKEND || VENDFLARE_SINGLE_BACKEND === "do") && env.USER_DATA) {
+		if (
+			(!VENDFLARE_SINGLE_BACKEND || VENDFLARE_SINGLE_BACKEND === "do") &&
+			(!env.STORAGE_BACKEND || env.STORAGE_BACKEND === "do") &&
+			env.USER_DATA
+		) {
 			this.do = env.USER_DATA;
-		} else if ((!VENDFLARE_SINGLE_BACKEND || VENDFLARE_SINGLE_BACKEND === "kv") && env.KV) {
+		} else if (
+			(!VENDFLARE_SINGLE_BACKEND || VENDFLARE_SINGLE_BACKEND === "kv") &&
+			(!env.STORAGE_BACKEND || env.STORAGE_BACKEND === "kv") &&
+			env.KV
+		) {
 			this.kv = env.KV;
 		} else if (
 			(!VENDFLARE_SINGLE_BACKEND || VENDFLARE_SINGLE_BACKEND === "upstash") &&
+			(!env.STORAGE_BACKEND || env.STORAGE_BACKEND === "upstash") &&
 			env.UPSTASH_REDIS_REST_URL &&
 			env.UPSTASH_REDIS_REST_TOKEN
 		) {
