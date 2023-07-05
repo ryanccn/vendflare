@@ -35,7 +35,7 @@ KV is often faster to retrieve and is free for a fair amount of usage (more than
 
 Durable Objects are **strongly consistent**, located only in one datacenter location closest to the user who triggered the creation of the Object and providing a storage API designed for consistency. However, using it requires subscribing to the Cloudflare Workers paid plan.
 
-Upstash Redis can both be **strongly _or_ eventually consistent**. With [Global Replication](https://docs.upstash.com/redis/features/globaldatabase) turned on, the database is replicated worldwide but the consistency will be eventual. When located in only one datacenter location (which is the default and provides more generous free usage), it's a good idea to turn on [Smart Placement](https://developers.cloudflare.com/workers/platform/smart-placement/), which places the Cloudflare Worker close to the database instead of near the uer.
+Upstash Redis can both be **strongly _or_ eventually consistent**. With [Global Replication](https://docs.upstash.com/redis/features/globaldatabase) turned on, the database is replicated worldwide but the consistency will be eventual. When located in only one datacenter location (which is the default and provides more generous free usage), it's a good idea to turn on [Smart Placement](https://developers.cloudflare.com/workers/platform/smart-placement/), which places the Cloudflare Worker close to the database instead of near the user.
 
 It is recommended to try KV first. If major synchronization issues arise (which is a small possibility), switch to Durable Objects or Upstash Redis. **Data is not shared between the storage backends.**
 
@@ -60,9 +60,9 @@ One recommended optimization is to use the build that only supports the storage 
 | `dist/worker.do.js`           | ❌  | ✅              | ❌      | Default     | ~30 kB |
 | `dist/worker.upstash.js`      | ❌  | ❌              | ✅      | Default     | ~31 kB |
 | `dist/worker.tiny.js`         | ✅  | ✅              | ✅      | Tiny        | ~26 kB |
-| `dist/worker.kv.tiny,js`      | ✅  | ❌              | ❌      | Tiny        | ~22 kB |
+| `dist/worker.kv.tiny.js`      | ✅  | ❌              | ❌      | Tiny        | ~22 kB |
 | `dist/worker.do.tiny.js`      | ❌  | ✅              | ❌      | Tiny        | ~23 kB |
-| `dist/worker.upstash.tiny,js` | ❌  | ❌              | ✅      | iny         | ~23 kB |
+| `dist/worker.upstash.tiny.js` | ❌  | ❌              | ✅      | iny         | ~23 kB |
 
 You can change what build you use by going to `wrangler.toml` and editing the `main` field to the path of the build that you want to use.
 
