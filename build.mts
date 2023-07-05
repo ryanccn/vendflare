@@ -8,8 +8,14 @@ import { execa } from "execa";
 import { readFile, readdir, rm } from "node:fs/promises";
 import { join } from "node:path";
 
-for (const f of await readdir("dist")) {
-	await rm(join("dist", f));
+try {
+	for (const f of await readdir("dist")) {
+		await rm(join("dist", f));
+	}
+} catch (e: unknown) {
+	if (!(e instanceof Error && typeof e.message.includes("ENOENT"))) {
+		throw e;
+	}
 }
 
 const size = async (f: string) => {
