@@ -1,11 +1,7 @@
 /**
- * Whether or not to only enable KV support
+ * The backend to support when building single-backend builds.
  */
-declare const VENDFLARE_KV_ONLY: boolean;
-/**
- * Whether or not to only enable Durable Objects support
- */
-declare const VENDFLARE_DO_ONLY: boolean;
+declare const VENDFLARE_SINGLE_BACKEND: "kv" | "do" | "upstash" | undefined;
 
 /**
  * Git revision of the current build

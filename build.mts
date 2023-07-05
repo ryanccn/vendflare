@@ -2,7 +2,7 @@
 
 import { BuildOptions, build } from "esbuild";
 
-import { bold, cyan, dim, green, magenta, blue, red, yellow } from "kleur/colors";
+import { bold, dim, cyan, green, magenta, blue } from "kleur/colors";
 import { execa } from "execa";
 
 import { readFile } from "node:fs/promises";
@@ -31,7 +31,6 @@ const size = async (f: string) => {
 };
 
 const commonOptions = {
-	entryPoints: ["src/worker.ts"],
 	format: "esm",
 	platform: "neutral",
 	bundle: true,
@@ -42,94 +41,45 @@ const revision = await execa("git", ["rev-parse", "--short", "HEAD"]).then((p) =
 
 const commonDefines = {
 	VENDFLARE_REVISION: JSON.stringify(revision),
-	VENDFLARE_KV_ONLY: "false",
-	VENDFLARE_DO_ONLY: "false",
 } as const;
+
+const tinyAlias = { "hono/cors": "hono/cors", hono: "hono/tiny" } as const;
 
 console.log(bold(`vendflare@${revision}`));
 
-const tablePadding = [18, 22] as const;
-
+const columnWidth = 30;
 const logBuild = async (name: string, file: string, color: (arg0: string) => string) => {
 	name = `${name} build`;
 
 	const sizeString = await size(join("dist", file));
 
-	const firstPad = tablePadding[0] - name.length;
-	const secondPad = tablePadding[1] - (file.length + 5);
+	const firstPad = columnWidth - name.length;
+	const secondPad = columnWidth - (file.length + 5);
 
 	console.log(
 		color(name) + " ".repeat(firstPad + 2) + dim("dist/") + file + " ".repeat(secondPad + 2) + color(sizeString)
 	);
 };
 
-await build({
-	...commonOptions,
-	outfile: "dist/worker.js",
-	define: {
-		...commonDefines,
-	},
-});
+for (const preset of ["default", "tiny"] as const) {
+	for (const backend of ["all", "kv", "do", "upstash"] as const) {
+		const outfile = `worker${backend !== "all" ? `.${backend}` : ""}${preset === "tiny" ? ".tiny" : ""}.js`;
 
-await logBuild("Full", "worker.js", cyan);
+		await build({
+			...commonOptions,
+			entryPoints: backend !== "kv" ? ["src/worker.ts"] : ["src/worker.kv.ts"],
+			outfile: join("dist", outfile),
+			define: {
+				...commonDefines,
+				...(backend !== "all" ? { VENDFLARE_SINGLE_BACKEND: JSON.stringify(backend) } : {}),
+			},
+			alias: preset === "tiny" ? tinyAlias : undefined,
+		});
 
-await build({
-	...commonOptions,
-	entryPoints: ["src/worker.kv.ts"],
-	outfile: "dist/worker.kv.js",
-	define: {
-		...commonDefines,
-		VENDFLARE_KV_ONLY: "true",
-	},
-});
-
-await logBuild("KV-only", "worker.kv.js", magenta);
-
-await build({
-	...commonOptions,
-	outfile: "dist/worker.do.js",
-	define: {
-		...commonDefines,
-		VENDFLARE_DO_ONLY: "true",
-	},
-});
-
-await logBuild("DO-only", "worker.do.js", green);
-
-const tinyAlias = { "hono/cors": "hono/cors", hono: "hono/tiny" } as const;
-
-await build({
-	...commonOptions,
-	outfile: "dist/worker.tiny.js",
-	define: {
-		...commonDefines,
-	},
-	alias: tinyAlias,
-});
-
-await logBuild("Tiny", "worker.tiny.js", red);
-
-await build({
-	...commonOptions,
-	entryPoints: ["src/worker.kv.ts"],
-	outfile: "dist/worker.kv.tiny.js",
-	define: {
-		...commonDefines,
-		VENDFLARE_KV_ONLY: "true",
-	},
-	alias: tinyAlias,
-});
-
-await logBuild("Tiny KV-only", "worker.kv.tiny.js", yellow);
-
-await build({
-	...commonOptions,
-	outfile: "dist/worker.do.tiny.js",
-	define: {
-		...commonDefines,
-		VENDFLARE_DO_ONLY: "true",
-	},
-	alias: tinyAlias,
-});
-
-await logBuild("Tiny DO-only", "worker.do.tiny.js", blue);
+		await logBuild(
+			`${preset} ${backend}`,
+			outfile,
+			backend === "all" ? cyan : backend === "do" ? green : backend === "kv" ? magenta : blue
+		);
+	}
+}
