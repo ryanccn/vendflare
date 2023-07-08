@@ -45,18 +45,18 @@ Vendflare will automatically pick up whichever is defined (Durable Objects > KV)
 
 ## Builds
 
-By default, the deployed Cloudflare worker uses the `dist/worker.js` build, which supports KV, Durable Objects, and Upstash. It also uses the default [Hono preset](https://hono.dev/api/presets), which includes a more performant but larger bundle size router (recommended). The tiny preset includes a much smaller but less performant router.
+By default, the deployed Cloudflare worker uses the `dist/worker.js` build, which supports KV and Durable Objects. It also uses the default [Hono preset](https://hono.dev/api/presets), which includes a more performant but larger bundle size router (recommended). The tiny preset includes a much smaller but less performant router.
 
 One recommended optimization is to use the build that only supports the storage backend that you are actually using.
 
-| Build                    | KV  | Durable Objects | Upstash | Hono preset | Size   |
-| ------------------------ | --- | --------------- | ------- | ----------- | ------ |
-| `dist/worker.js`         | ✅  | ✅              | ✅      | Default     | ~33 kB |
-| `dist/worker.kv.js`      | ✅  | ❌              | ❌      | Default     | ~29 kB |
-| `dist/worker.do.js`      | ❌  | ✅              | ❌      | Default     | ~30 kB |
-| `dist/worker.tiny.js`    | ✅  | ✅              | ✅      | Tiny        | ~26 kB |
-| `dist/worker.kv.tiny.js` | ✅  | ❌              | ❌      | Tiny        | ~22 kB |
-| `dist/worker.do.tiny.js` | ❌  | ✅              | ❌      | Tiny        | ~23 kB |
+| Build                    | KV  | Durable Objects | Hono preset | Size   |
+| ------------------------ | --- | --------------- | ----------- | ------ |
+| `dist/worker.js`         | ✅  | ✅              | Default     | ~33 kB |
+| `dist/worker.kv.js`      | ✅  | ❌              | Default     | ~29 kB |
+| `dist/worker.do.js`      | ❌  | ✅              | Default     | ~30 kB |
+| `dist/worker.tiny.js`    | ✅  | ✅              | Tiny        | ~26 kB |
+| `dist/worker.kv.tiny.js` | ✅  | ❌              | Tiny        | ~22 kB |
+| `dist/worker.do.tiny.js` | ❌  | ✅              | Tiny        | ~23 kB |
 
 You can change what build you use by going to `wrangler.toml` and editing the `main` field to the path of the build that you want to use.
 
