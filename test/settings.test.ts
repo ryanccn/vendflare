@@ -90,7 +90,7 @@ test("if-none-match header is observed", async () => {
 	const getRes2 = await worker.fetch(
 		new Request(makeUrl("/v1/settings"), {
 			method: "GET",
-			headers: { authorization: btoa("bleh:TESTING_USER"), "if-none-match": `${Date.now()}` },
+			headers: { authorization: btoa("bleh:TESTING_USER"), "if-none-match": `${written + 1}` },
 		}),
 		{ KV }
 	);

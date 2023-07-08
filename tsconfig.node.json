@@ -19,6 +19,5 @@
 		"useUnknownInCatchVariables": true,
 		"skipLibCheck": true
 	},
-	"include": ["build.mts"],
-	"exclude": ["dist", "node_modules", "**/node_modules", "test", "src"]
+	"include": ["build.mts"]
 }
