@@ -1,6 +1,5 @@
 import * as kvBackend from "./kv";
 import * as doBackend from "./do";
-import * as upstashBackend from "./upstash";
 
 import { userDataKeys, type UserDataType } from "./types";
 import type { Env } from "~/env";

@@ -5,7 +5,7 @@
 		"lib": ["es2022"],
 		"jsx": "react",
 		"moduleResolution": "node",
-		"paths": { "@src/*": ["../src/*"], "@dist/*": ["../dist/*"] },
+		"paths": { "@src/*": ["./src/*"], "@dist/*": ["./dist/*"] },
 		"types": ["@cloudflare/workers-types", "vitest-environment-miniflare/globals"],
 		"resolveJsonModule": true,
 		"allowJs": true,
@@ -20,6 +20,6 @@
 		"useUnknownInCatchVariables": true,
 		"skipLibCheck": true
 	},
-	"include": ["**/*.ts"],
-	"exclude": ["node_modules", "**/node_modules"]
+	"include": ["test/**/*.ts"],
+	"exclude": ["dist", "node_modules", "**/node_modules", "build.mts", "src"]
 }
