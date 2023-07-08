@@ -74,9 +74,8 @@ app.put("/v1/settings", async (ctx) => {
 
 	const decompressed = inflate(new Uint8Array(rawData));
 	const dataString = new TextDecoder().decode(decompressed);
-	const minifiedDataString = JSON.stringify(JSON.parse(dataString));
 
-	await Promise.all([store.put("settings:value", minifiedDataString), store.put("settings:written", `${now}`)]);
+	await Promise.all([store.put("settings:value", dataString), store.put("settings:written", `${now}`)]);
 
 	return ctx.json({ written: now });
 });
