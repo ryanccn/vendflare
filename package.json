@@ -7,7 +7,8 @@
 		"build": "tsx build.mts",
 		"deploy": "wrangler deploy",
 		"lint": "tsc && eslint .",
-		"format": "prettier --write ."
+		"format": "prettier --write .",
+		"test": "cross-env NODE_OPTIONS=--experimental-vm-modules NODE_NO_WARNINGS=1 vitest run"
 	},
 	"dependencies": {
 		"fflate": "^0.8.0",
@@ -16,9 +17,12 @@
 	"devDependencies": {
 		"@cloudflare/workers-types": "^4.20230518.0",
 		"@microsoft/eslint-formatter-sarif": "^3.0.0",
+		"@miniflare/kv": "^2.14.0",
+		"@miniflare/storage-memory": "^2.14.0",
 		"@types/node": "^20.3.3",
 		"@typescript-eslint/eslint-plugin": "^5.61.0",
 		"@typescript-eslint/parser": "^5.61.0",
+		"cross-env": "^7.0.3",
 		"esbuild": "^0.18.11",
 		"eslint": "^8.44.0",
 		"execa": "^7.1.1",
@@ -26,6 +30,8 @@
 		"prettier": "^2.8.8",
 		"tsx": "^3.12.7",
 		"typescript": "^5.1.6",
+		"vitest": "^0.33.0",
+		"vitest-environment-miniflare": "^2.14.0",
 		"wrangler": "^3.1.1"
 	},
 	"packageManager": "pnpm@8.6.6"

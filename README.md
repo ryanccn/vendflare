@@ -60,6 +60,10 @@ One recommended optimization is to use the build that only supports the storage 
 
 You can change what build you use by going to `wrangler.toml` and editing the `main` field to the path of the build that you want to use.
 
+## Testing
+
+Tests are powered by [Vitest](https://vitest.dev/). They all assume a KV binding environment, so make sure the `KV` binding is set when running the tests. `vitest-environment-miniflare` ensures an isolated storage environment.
+
 ## License
 
 GNU AGPL v3
