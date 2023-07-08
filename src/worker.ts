@@ -5,7 +5,7 @@ import { cors } from "hono/cors";
 import { auth, requireAuth } from "./auth";
 import { UserDataStore } from "./store";
 
-import { inflateSync as inflate } from "fflate";
+import { inflateSync as inflate, deflateSync as deflate, deflateSync } from "fflate";
 import { toHex } from "./utils";
 import type { Bindings, Variables } from "./env";
 
@@ -47,7 +47,9 @@ app.get("/v1/settings", async (ctx) => {
 	ctx.header("content-type", "application/octet-stream");
 	ctx.header("etag", written);
 
-	return ctx.body(settings);
+	const compressedSettings = deflateSync(new TextEncoder().encode(settings));
+
+	return ctx.body(compressedSettings);
 });
 
 app.put("/v1/settings", async (ctx) => {
