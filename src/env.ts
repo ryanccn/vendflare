@@ -1,11 +1,9 @@
 import { UserDataStore } from "./store";
 
 export type Env = {
-	STORAGE_BACKEND?: "kv" | "do" | "upstash";
+	STORAGE_BACKEND?: "kv" | "do";
 	KV?: KVNamespace;
 	USER_DATA?: DurableObjectNamespace;
-	UPSTASH_REDIS_REST_URL?: string;
-	UPSTASH_REDIS_REST_TOKEN?: string;
 
 	ROOT_REDIRECT?: string;
 

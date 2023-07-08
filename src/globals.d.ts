@@ -1,7 +1,7 @@
 /**
  * The backend to support when building single-backend builds.
  */
-declare const VENDFLARE_SINGLE_BACKEND: "kv" | "do" | "upstash" | null;
+declare const VENDFLARE_SINGLE_BACKEND: "kv" | "do" | null;
 
 /**
  * Git revision of the current build

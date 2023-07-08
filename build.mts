@@ -2,10 +2,10 @@
 
 import { BuildOptions, build } from "esbuild";
 
-import { bold, dim, cyan, green, magenta, blue } from "kleur/colors";
+import { bold, dim, cyan, green, magenta } from "kleur/colors";
 import { execa } from "execa";
 
-import { readFile, readdir, rm } from "node:fs/promises";
+import { readFile, readdir, rm, writeFile } from "node:fs/promises";
 import { join } from "node:path";
 
 try {
@@ -72,8 +72,17 @@ const logBuild = async (name: string, file: string, color: (arg0: string) => str
 	);
 };
 
+const workerDeclaration = `
+import worker from '../src/worker';
+export default worker;
+`.trimStart();
+
+const durableDeclaration = `
+export { UserData } from '../src/worker';
+`.trimStart();
+
 for (const preset of ["default", "tiny"] as const) {
-	for (const backend of ["all", "kv", "do", "upstash"] as const) {
+	for (const backend of ["all", "kv", "do"] as const) {
 		const outfile = `worker${backend !== "all" ? `.${backend}` : ""}${preset === "tiny" ? ".tiny" : ""}.js`;
 
 		await build({
@@ -87,10 +96,11 @@ for (const preset of ["default", "tiny"] as const) {
 			alias: preset === "tiny" ? tinyAlias : undefined,
 		});
 
-		await logBuild(
-			`${preset} ${backend}`,
-			outfile,
-			backend === "all" ? cyan : backend === "do" ? green : backend === "kv" ? magenta : blue
+		await writeFile(
+			join("dist", outfile.replace(/\.js$/, ".d.ts")),
+			workerDeclaration + (backend !== "kv" ? durableDeclaration : "")
 		);
+
+		await logBuild(`${preset} ${backend}`, outfile, backend === "all" ? cyan : backend === "do" ? green : magenta);
 	}
 }

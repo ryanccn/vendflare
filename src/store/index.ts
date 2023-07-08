@@ -11,7 +11,6 @@ export class UserDataStore {
 
 	kv?: KVNamespace;
 	do?: DurableObjectNamespace;
-	upstash?: upstashBackend.UpstashConfig;
 
 	constructor(env: Env, userId: string) {
 		this.env = env;
@@ -29,16 +28,6 @@ export class UserDataStore {
 			env.KV
 		) {
 			this.kv = env.KV;
-		} else if (
-			(!VENDFLARE_SINGLE_BACKEND || VENDFLARE_SINGLE_BACKEND === "upstash") &&
-			(!env.STORAGE_BACKEND || env.STORAGE_BACKEND === "upstash") &&
-			env.UPSTASH_REDIS_REST_URL &&
-			env.UPSTASH_REDIS_REST_TOKEN
-		) {
-			this.upstash = {
-				url: env.UPSTASH_REDIS_REST_URL,
-				token: env.UPSTASH_REDIS_REST_TOKEN,
-			};
 		} else {
 			throw new Error("No supported storage backends found!");
 		}
@@ -49,9 +38,6 @@ export class UserDataStore {
 	}
 	isDO(): this is { do: DurableObjectNamespace } {
 		return !!this.do;
-	}
-	isUpstash(): this is { upstash: upstashBackend.UpstashConfig } {
-		return !!this.upstash;
 	}
 
 	#getUserDurableObject() {
@@ -65,8 +51,6 @@ export class UserDataStore {
 			return doBackend.get(obj, key);
 		} else if ((!VENDFLARE_SINGLE_BACKEND || VENDFLARE_SINGLE_BACKEND === "kv") && this.isKV()) {
 			return kvBackend.get(this.kv, this.userId, key);
-		} else if ((!VENDFLARE_SINGLE_BACKEND || VENDFLARE_SINGLE_BACKEND === "upstash") && this.isUpstash()) {
-			return upstashBackend.get(this.upstash, this.userId, key);
 		} else {
 			throw new Error("No supported storage backends found!");
 		}
@@ -80,8 +64,6 @@ export class UserDataStore {
 		} else if ((!VENDFLARE_SINGLE_BACKEND || VENDFLARE_SINGLE_BACKEND === "kv") && this.isKV()) {
 			await kvBackend.put(this.kv, this.userId, key, value);
 			return;
-		} else if ((!VENDFLARE_SINGLE_BACKEND || VENDFLARE_SINGLE_BACKEND === "upstash") && this.isUpstash()) {
-			return upstashBackend.put(this.upstash, this.userId, key, value);
 		} else {
 			throw new Error("No supported storage backends found!");
 		}
@@ -93,8 +75,6 @@ export class UserDataStore {
 			await doBackend.del(obj, key);
 		} else if ((!VENDFLARE_SINGLE_BACKEND || VENDFLARE_SINGLE_BACKEND === "kv") && this.isKV()) {
 			await kvBackend.del(this.kv, this.userId, key);
-		} else if ((!VENDFLARE_SINGLE_BACKEND || VENDFLARE_SINGLE_BACKEND === "upstash") && this.isUpstash()) {
-			return upstashBackend.del(this.upstash, this.userId, key);
 		} else {
 			throw new Error("No supported storage backends found!");
 		}
@@ -107,10 +87,6 @@ export class UserDataStore {
 		} else if ((!VENDFLARE_SINGLE_BACKEND || VENDFLARE_SINGLE_BACKEND === "kv") && this.isKV()) {
 			for (const key of userDataKeys) {
 				await kvBackend.del(this.kv, this.userId, key);
-			}
-		} else if ((!VENDFLARE_SINGLE_BACKEND || VENDFLARE_SINGLE_BACKEND === "upstash") && this.isUpstash()) {
-			for (const key of userDataKeys) {
-				await upstashBackend.del(this.upstash, this.userId, key);
 			}
 		} else {
 			throw new Error("No supported storage backends found!");
