@@ -1,4 +1,5 @@
 import { MiddlewareHandler } from "hono";
+import { startTime, endTime } from "hono/timing";
 import { UserDataStore } from "./store";
 
 import type { Bindings, Variables } from "./env";
@@ -6,12 +7,14 @@ import type { Bindings, Variables } from "./env";
 export const auth: MiddlewareHandler<{
 	Bindings: Bindings;
 	Variables: Variables;
-}> = async (c, next) => {
-	c.set("userId", null);
-	c.set("store", null);
+}> = async (ctx, next) => {
+	startTime(ctx, "Authentication");
+	ctx.set("userId", null);
+	ctx.set("store", null);
 
-	const authHeader = c.req.headers.get("authorization");
+	const authHeader = ctx.req.headers.get("authorization");
 	if (authHeader === null) {
+		endTime(ctx, "Authentication");
 		await next();
 		return;
 	}
@@ -21,6 +24,7 @@ export const auth: MiddlewareHandler<{
 	try {
 		token = atob(authHeader);
 	} catch {
+		endTime(ctx, "Authentication");
 		await next();
 		return;
 	}
@@ -28,35 +32,39 @@ export const auth: MiddlewareHandler<{
 	const tokenSplit = token.split(":");
 
 	if (tokenSplit.length !== 2) {
+		endTime(ctx, "Authentication");
 		await next();
 		return;
 	}
 
 	const [secret, userId] = tokenSplit;
 
-	if (c.env.ALLOWED_USERS && !c.env.ALLOWED_USERS.split(",").includes(userId)) {
+	if (ctx.env.ALLOWED_USERS && !ctx.env.ALLOWED_USERS.split(",").includes(userId)) {
+		endTime(ctx, "Authentication");
 		await next();
 		return;
 	}
 
-	const store = new UserDataStore(c.env, userId);
+	const store = new UserDataStore(ctx.env, userId);
 	const storedSecret = await store.get("secret");
 
 	if (!storedSecret || storedSecret !== secret) {
+		endTime(ctx, "Authentication");
 		await next();
 		return;
 	}
 
-	c.set("userId", userId);
-	c.set("store", store);
+	ctx.set("userId", userId);
+	ctx.set("store", store);
 
+	endTime(ctx, "Authentication");
 	await next();
 };
 
-export const requireAuth: MiddlewareHandler = async (c, next) => {
-	const userId = c.get("userId");
+export const requireAuth: MiddlewareHandler = async (ctx, next) => {
+	const userId = ctx.get("userId");
 	if (userId === null) {
-		return c.json({ error: "Unauthorized" }, 401);
+		return ctx.json({ error: "Unauthorized" }, 401);
 	}
 
 	await next();
