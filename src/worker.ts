@@ -26,7 +26,7 @@ app.use("*", async (c, next) => {
 
 app.use("*", auth);
 
-app.get("/", (c) => c.redirect(c.env.ROOT_REDIRECT || "https://vencord.dev/", 302));
+app.get("/", (c) => c.redirect(c.env.ROOT_REDIRECT || "https://github.com/ryanccn/vendflare", 302));
 
 app.use("/v1/settings", requireAuth);
 
