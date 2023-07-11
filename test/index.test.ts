@@ -8,7 +8,7 @@ test("returns default redirect", async () => {
 	const res = await worker.fetch(new Request(makeUrl("/"), { redirect: "manual" }), {});
 
 	expect(res.status).toEqual(302);
-	expect(res.headers.get("location")).toEqual("https://vencord.dev/");
+	expect(res.headers.get("location")).toEqual("https://github.com/ryanccn/vendflare");
 });
 
 test("returns custom redirect", async () => {
