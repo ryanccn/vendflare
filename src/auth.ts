@@ -1,5 +1,5 @@
 import { MiddlewareHandler } from "hono";
-import { startTime, endTime } from "hono/timing";
+import { startTime, endTime } from "./utils/timing";
 import { UserDataStore } from "./store";
 
 import type { Bindings, Variables } from "./env";
@@ -8,13 +8,13 @@ export const auth: MiddlewareHandler<{
 	Bindings: Bindings;
 	Variables: Variables;
 }> = async (ctx, next) => {
-	startTime(ctx, "Authentication");
+	startTime(ctx, "auth");
 	ctx.set("userId", null);
 	ctx.set("store", null);
 
 	const authHeader = ctx.req.headers.get("authorization");
 	if (authHeader === null) {
-		endTime(ctx, "Authentication");
+		endTime(ctx, "auth");
 		await next();
 		return;
 	}
@@ -24,7 +24,7 @@ export const auth: MiddlewareHandler<{
 	try {
 		token = atob(authHeader);
 	} catch {
-		endTime(ctx, "Authentication");
+		endTime(ctx, "auth");
 		await next();
 		return;
 	}
@@ -32,7 +32,7 @@ export const auth: MiddlewareHandler<{
 	const tokenSplit = token.split(":");
 
 	if (tokenSplit.length !== 2) {
-		endTime(ctx, "Authentication");
+		endTime(ctx, "auth");
 		await next();
 		return;
 	}
@@ -40,16 +40,18 @@ export const auth: MiddlewareHandler<{
 	const [secret, userId] = tokenSplit;
 
 	if (ctx.env.ALLOWED_USERS && !ctx.env.ALLOWED_USERS.split(",").includes(userId)) {
-		endTime(ctx, "Authentication");
+		endTime(ctx, "auth");
 		await next();
 		return;
 	}
 
 	const store = new UserDataStore(ctx.env, userId);
+	startTime(ctx, "getSecret");
 	const storedSecret = await store.get("secret");
+	endTime(ctx, "getSecret");
 
 	if (!storedSecret || storedSecret !== secret) {
-		endTime(ctx, "Authentication");
+		endTime(ctx, "auth");
 		await next();
 		return;
 	}
@@ -57,7 +59,7 @@ export const auth: MiddlewareHandler<{
 	ctx.set("userId", userId);
 	ctx.set("store", store);
 
-	endTime(ctx, "Authentication");
+	endTime(ctx, "auth");
 	await next();
 };
 
