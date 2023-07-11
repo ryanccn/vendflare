@@ -3,7 +3,7 @@ import type { UserDataType } from "./types";
 export const get = async <K extends keyof UserDataType>(
 	kv: KVNamespace,
 	userId: string,
-	key: K
+	key: K,
 ): Promise<UserDataType[K] | null> => {
 	const value = await kv.get(userId + ":" + key, "text");
 
@@ -15,7 +15,7 @@ export const put = async <K extends keyof UserDataType>(
 	kv: KVNamespace,
 	userId: string,
 	key: K,
-	value: UserDataType[K]
+	value: UserDataType[K],
 ) => {
 	await kv.put(userId + ":" + key, value);
 };

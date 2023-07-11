@@ -54,7 +54,7 @@ const commonDefines = {
 	VENDFLARE_SINGLE_BACKEND: JSON.stringify(null),
 } as const;
 
-const tinyAlias = { "hono/cors": "hono/cors", hono: "hono/tiny" } as const;
+const tinyAlias = { "hono/cors": "hono/cors", "hono/timing": "hono/timing", hono: "hono/tiny" } as const;
 
 console.log(bold(`vendflare@${revision}`));
 
@@ -68,7 +68,7 @@ const logBuild = async (name: string, file: string, color: (arg0: string) => str
 	const secondPad = columnWidth - (file.length + 5);
 
 	console.log(
-		color(name) + " ".repeat(firstPad + 2) + dim("dist/") + file + " ".repeat(secondPad + 2) + color(sizeString)
+		color(name) + " ".repeat(firstPad + 2) + dim("dist/") + file + " ".repeat(secondPad + 2) + color(sizeString),
 	);
 };
 
@@ -98,7 +98,7 @@ for (const preset of ["default", "tiny"] as const) {
 
 		await writeFile(
 			join("dist", outfile.replace(/\.js$/, ".d.ts")),
-			workerDeclaration + (backend !== "kv" ? durableDeclaration : "")
+			workerDeclaration + (backend !== "kv" ? durableDeclaration : ""),
 		);
 
 		await logBuild(`${preset} ${backend}`, outfile, backend === "all" ? cyan : backend === "do" ? green : magenta);

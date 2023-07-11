@@ -47,7 +47,7 @@ export class UserData {
 
 export const get = async <K extends keyof UserDataType>(
 	object: DurableObjectStub,
-	key: K
+	key: K,
 ): Promise<UserDataType[K] | null> => {
 	const req = new Request(`${FAKE_HOST}/${encodeURIComponent(key)}`);
 	const res = await object.fetch(req);

@@ -11,7 +11,7 @@ test("empty settings returns 404", async () => {
 
 	const res = await worker.fetch(
 		new Request(makeUrl("/v1/settings"), { method: "GET", headers: { authorization: btoa("bleh:TESTING_USER") } }),
-		{ KV }
+		{ KV },
 	);
 
 	expect(res.status).toEqual(404);
@@ -26,7 +26,7 @@ test("settings are saved", async () => {
 			body: deflateSync(new TextEncoder().encode(JSON.stringify({ test: "data" }))),
 			headers: { "content-type": "application/octet-stream", authorization: btoa("bleh:TESTING_USER") },
 		}),
-		{ KV }
+		{ KV },
 	);
 
 	expect(putRes.ok).toEqual(true);
@@ -36,7 +36,7 @@ test("settings are saved", async () => {
 			method: "GET",
 			headers: { authorization: btoa("bleh:TESTING_USER") },
 		}),
-		{ KV }
+		{ KV },
 	);
 
 	expect(getRes.ok).toEqual(true);
@@ -55,7 +55,7 @@ test("size limit is enforced", async () => {
 			body: deflateSync(new TextEncoder().encode(JSON.stringify({ test: "data" }))),
 			headers: { "content-type": "application/octet-stream", authorization: btoa("bleh:TESTING_USER") },
 		}),
-		{ KV, SIZE_LIMIT: 1 }
+		{ KV, SIZE_LIMIT: 1 },
 	);
 
 	expect(putRes.status).toEqual(413);
@@ -70,7 +70,7 @@ test("if-none-match header is observed", async () => {
 			body: deflateSync(new TextEncoder().encode(JSON.stringify({ test: "data" }))),
 			headers: { "content-type": "application/octet-stream", Authorization: btoa("bleh:TESTING_USER") },
 		}),
-		{ KV }
+		{ KV },
 	);
 
 	expect(putRes.ok).toEqual(true);
@@ -82,7 +82,7 @@ test("if-none-match header is observed", async () => {
 			method: "GET",
 			headers: { authorization: btoa("bleh:TESTING_USER"), "if-none-match": `${written}` },
 		}),
-		{ KV }
+		{ KV },
 	);
 
 	expect(getRes.status).toEqual(304);
@@ -92,7 +92,7 @@ test("if-none-match header is observed", async () => {
 			method: "GET",
 			headers: { authorization: btoa("bleh:TESTING_USER"), "if-none-match": `${written + 1}` },
 		}),
-		{ KV }
+		{ KV },
 	);
 
 	expect(getRes2.status).toEqual(200);
