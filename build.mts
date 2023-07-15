@@ -91,8 +91,8 @@ for (const preset of ["default", "tiny"] as const) {
 			outfile: join("dist", outfile),
 			define: {
 				...commonDefines,
-				...(backend !== "all" ? { VENDFLARE_SINGLE_BACKEND: JSON.stringify(backend) } : {}),
 			},
+			dropLabels: backend === "kv" ? ["durable"] : backend === "do" ? ["kv"] : [],
 			alias: preset === "tiny" ? tinyAlias : undefined,
 		});
 

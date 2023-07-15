@@ -18,7 +18,8 @@
 		"strict": true,
 		"strictNullChecks": true,
 		"useUnknownInCatchVariables": true,
-		"skipLibCheck": true
+		"skipLibCheck": true,
+		"allowUnusedLabels": true
 	},
 	"include": ["**/*.ts"],
 	"exclude": ["node_modules", "**/node_modules", "build.mts", "test/**/*.ts"]

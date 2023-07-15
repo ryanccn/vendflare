@@ -15,16 +15,16 @@
 		"hono": "^3.3.0"
 	},
 	"devDependencies": {
-		"@cloudflare/workers-types": "^4.20230628.0",
+		"@cloudflare/workers-types": "^4.20230710.1",
 		"@microsoft/eslint-formatter-sarif": "^3.0.0",
 		"@miniflare/kv": "^2.14.0",
 		"@miniflare/storage-memory": "^2.14.0",
-		"@types/node": "^20.4.1",
+		"@types/node": "^20.4.2",
 		"@typescript-eslint/eslint-plugin": "^6.0.0",
 		"@typescript-eslint/parser": "^6.0.0",
 		"cross-env": "^7.0.3",
-		"esbuild": "^0.18.11",
-		"eslint": "^8.44.0",
+		"esbuild": "^0.18.13",
+		"eslint": "^8.45.0",
 		"execa": "^7.1.1",
 		"kleur": "^4.1.5",
 		"prettier": "^3.0.0",
@@ -32,7 +32,7 @@
 		"typescript": "^5.1.6",
 		"vitest": "^0.33.0",
 		"vitest-environment-miniflare": "^2.14.0",
-		"wrangler": "^3.1.2"
+		"wrangler": "^3.2.0"
 	},
 	"packageManager": "pnpm@8.6.7"
 }
