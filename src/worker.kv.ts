@@ -1,3 +1,1 @@
-import worker from "./worker";
-
-export default worker;
+export { default } from "./worker";

@@ -12,9 +12,9 @@ try {
 	for (const f of await readdir("dist")) {
 		await rm(join("dist", f));
 	}
-} catch (e: unknown) {
-	if (!(e instanceof Error && typeof e.message.includes("ENOENT"))) {
-		throw e;
+} catch (error: unknown) {
+	if (!(error instanceof Error && typeof error.message.includes("ENOENT"))) {
+		throw error;
 	}
 }
 
@@ -83,11 +83,11 @@ export { UserData } from '../src/worker';
 
 for (const preset of ["default", "tiny"] as const) {
 	for (const backend of ["all", "kv", "do"] as const) {
-		const outfile = `worker${backend !== "all" ? `.${backend}` : ""}${preset === "tiny" ? ".tiny" : ""}.js`;
+		const outfile = `worker${backend === "all" ? "" : `.${backend}`}${preset === "tiny" ? ".tiny" : ""}.js`;
 
 		await build({
 			...commonOptions,
-			entryPoints: backend !== "kv" ? ["src/worker.ts"] : ["src/worker.kv.ts"],
+			entryPoints: backend === "kv" ? ["src/worker.kv.ts"] : ["src/worker.ts"],
 			outfile: join("dist", outfile),
 			define: {
 				...commonDefines,
@@ -98,7 +98,7 @@ for (const preset of ["default", "tiny"] as const) {
 
 		await writeFile(
 			join("dist", outfile.replace(/\.js$/, ".d.ts")),
-			workerDeclaration + (backend !== "kv" ? durableDeclaration : ""),
+			workerDeclaration + (backend === "kv" ? "" : durableDeclaration),
 		);
 
 		await logBuild(`${preset} ${backend}`, outfile, backend === "all" ? cyan : backend === "do" ? green : magenta);

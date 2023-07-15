@@ -31,5 +31,5 @@ test("ping pong", async () => {
 test("x-powered-by header", async () => {
 	const res = await worker.fetch(new Request(makeUrl("/v1")));
 	expect(res.ok).toEqual(true);
-	expect(res.headers.get("x-powered-by")).toMatch(/^vendflare@[a-zA-Z0-9]+$/);
+	expect(res.headers.get("x-powered-by")).toMatch(/^vendflare@[\dA-Za-z]+$/);
 });

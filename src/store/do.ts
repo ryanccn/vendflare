@@ -58,7 +58,7 @@ export const get = async <K extends keyof UserDataType>(
 
 	const { value } = (await res.json()) as { value: unknown };
 
-	if (typeof value === "undefined" || value === null) return null;
+	if (value === undefined || value === null) return null;
 
 	// eslint-disable-next-line @typescript-eslint/no-explicit-any
 	return value as any;

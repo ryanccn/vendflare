@@ -72,7 +72,7 @@ app.put("/v1/settings", async (ctx) => {
 	const rawData = await ctx.req.arrayBuffer();
 	endTime(ctx, "receiveBuffer");
 
-	const sizeLimit = ctx.env.SIZE_LIMIT ? parseInt(ctx.env.SIZE_LIMIT) : null;
+	const sizeLimit = ctx.env.SIZE_LIMIT ? Number.parseInt(ctx.env.SIZE_LIMIT) : null;
 	if (sizeLimit && rawData.byteLength > sizeLimit) {
 		return ctx.json({ error: "Settings are too large" }, 413);
 	}
