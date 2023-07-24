@@ -23,7 +23,7 @@
 		"@typescript-eslint/eslint-plugin": "^6.1.0",
 		"@typescript-eslint/parser": "^6.1.0",
 		"cross-env": "^7.0.3",
-		"esbuild": "^0.18.14",
+		"esbuild": "^0.18.16",
 		"eslint": "^8.45.0",
 		"eslint-plugin-unicorn": "^48.0.0",
 		"execa": "^7.1.1",
