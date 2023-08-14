@@ -9,8 +9,8 @@ dependencies:
     specifier: ^0.8.0
     version: 0.8.0
   hono:
-    specifier: ^3.3.3
-    version: 3.3.3
+    specifier: ^3.4.1
+    version: 3.4.1
 
 devDependencies:
   '@cloudflare/workers-types':
@@ -2090,8 +2090,8 @@ packages:
       function-bind: 1.1.1
     dev: true
 
-  /hono@3.3.3:
-    resolution: {integrity: sha512-k/KQw4GVvyJJT/qgbpLCeRSe7JT4USWkQkzXDNsRMbpWrrncT2Dj2rQQObDxnYZOYziZickgXvJHy+wuxsaunA==}
+  /hono@3.4.1:
+    resolution: {integrity: sha512-fA7/cfgNg060mt12cYykdstwqM/bRvqYmQlPpEjoKIwMs6QF1rPJzZjppCrFuZZJvKE1vEP6kEAaaDH96XRg7Q==}
     engines: {node: '>=16.0.0'}
     dev: false
 
