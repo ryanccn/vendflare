@@ -54,7 +54,11 @@ const commonDefines = {
 	VENDFLARE_SINGLE_BACKEND: JSON.stringify(null),
 } as const;
 
-const tinyAlias = { "hono/cors": "hono/cors", "hono/timing": "hono/timing", hono: "hono/tiny" } as const;
+const honoModules = ["cors", "timing", "secure-headers"];
+
+const tinyAlias = Object.fromEntries(
+	honoModules.map((mod) => [`hono/${mod}`, `hono/${mod}`]).concat([["hono", "hono/tiny"]]),
+) as Record<string, string>;
 
 console.log(bold(`vendflare@${revision}`));
 

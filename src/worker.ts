@@ -1,6 +1,7 @@
 import { Hono } from "hono";
 import { timing } from "hono/timing";
 import { cors } from "hono/cors";
+import { secureHeaders } from "hono/secure-headers";
 
 import { auth, requireAuth } from "./auth";
 import { UserDataStore } from "./store";
@@ -23,8 +24,10 @@ app.use(
 	}),
 );
 
-app.use("*", poweredBy);
+app.use("*", poweredBy());
+app.use("*", secureHeaders());
 app.use("*", timing());
+
 app.use("*", auth);
 
 app.get("/", (c) => c.redirect(c.env.ROOT_REDIRECT || "https://github.com/ryanccn/vendflare", 302));
