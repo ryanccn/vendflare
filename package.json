@@ -32,7 +32,7 @@
 		"tsx": "^3.12.7",
 		"typescript": "^5.1.6",
 		"vitest": "^0.34.2",
-		"vitest-environment-miniflare": "^2.14.0",
+		"vitest-environment-miniflare": "^2.14.1",
 		"wrangler": "^3.5.1"
 	},
 	"packageManager": "pnpm@8.6.12"
