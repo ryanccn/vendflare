@@ -15,7 +15,7 @@
 		"hono": "^3.5.0"
 	},
 	"devDependencies": {
-		"@cloudflare/workers-types": "^4.20230814.0",
+		"@cloudflare/workers-types": "^4.20230821.0",
 		"@microsoft/eslint-formatter-sarif": "^3.0.0",
 		"@miniflare/kv": "^2.14.0",
 		"@miniflare/storage-memory": "^2.14.0",
