@@ -56,9 +56,10 @@ const commonDefines = {
 
 const honoModules = ["cors", "timing", "secure-headers"];
 
-const tinyAlias = Object.fromEntries(
-	honoModules.map((mod) => [`hono/${mod}`, `hono/${mod}`]).concat([["hono", "hono/tiny"]]),
-) as Record<string, string>;
+const tinyAlias = Object.fromEntries([
+	...honoModules.map((mod) => [`hono/${mod}`, `hono/${mod}`]),
+	["hono", "hono/tiny"],
+]) as Record<string, string>;
 
 console.log(bold(`vendflare@${revision}`));
 

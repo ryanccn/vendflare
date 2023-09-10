@@ -54,7 +54,10 @@ app.get("/v1/settings", async (ctx) => {
 	ctx.header("etag", written);
 
 	startTime(ctx, "compressData");
-	const compressedSettings = deflate(new TextEncoder().encode(settings));
+	const settingsData = new TextEncoder().encode(settings);
+	const compressedSettings = deflate(
+		new Uint8Array(settingsData instanceof ArrayBuffer ? settingsData : settingsData.buffer),
+	);
 	endTime(ctx, "compressData");
 
 	return ctx.body(compressedSettings);
