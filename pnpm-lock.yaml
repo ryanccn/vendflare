@@ -14,8 +14,8 @@ dependencies:
 
 devDependencies:
   '@cloudflare/workers-types':
-    specifier: ^4.20230904.0
-    version: 4.20230904.0
+    specifier: ^4.20230914.0
+    version: 4.20230914.0
   '@microsoft/eslint-formatter-sarif':
     specifier: ^3.0.0
     version: 3.0.0
@@ -151,8 +151,8 @@ packages:
     dev: true
     optional: true
 
-  /@cloudflare/workers-types@4.20230904.0:
-    resolution: {integrity: sha512-IX4oJCe14ctblSPZBlW64BVZ9nYLUo6sD2I5gu3hX0ywByYWm1OuoKm9Xb/Zpbj8Ph18Z7Ryii6u2/ocnncXdA==}
+  /@cloudflare/workers-types@4.20230914.0:
+    resolution: {integrity: sha512-OVeN4lFVu1O0PJGZ2d0FwpK8lelFcr33qYOgCh77ErEYmEBO4adwnIxcIsdQbFbhF0ffN6joiVcljD4zakdaeQ==}
     dev: true
 
   /@esbuild-kit/cjs-loader@2.4.2:
@@ -960,7 +960,7 @@ packages:
     resolution: {integrity: sha512-hfactEWiHuHOmE29XFG8oLNCF6+HqjD6Mb80CzidcVmLlBTEtSC3PEF+DXPyvNdLXpBolZMKOuC/yzzloWvACA==}
     engines: {node: '>=16.13'}
     dependencies:
-      '@cloudflare/workers-types': 4.20230904.0
+      '@cloudflare/workers-types': 4.20230914.0
       '@miniflare/cache': 2.14.1
       '@miniflare/core': 2.14.1
       '@miniflare/d1': 2.14.1
