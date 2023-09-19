@@ -12,12 +12,14 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
 
+      - name: Install pnpm
+        uses: pnpm/action-setup@v2
       - name: Setup Node.js
         uses: actions/setup-node@v3
         with:
           node-version: 20
-      - name: Install pnpm
-        uses: pnpm/action-setup@v2
+          cache: pnpm
+          cache-dependency-path: pnpm-lock.yaml
 
       - name: Install dependencies
         run: pnpm install --frozen-lockfile

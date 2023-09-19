@@ -11,7 +11,7 @@
 		"test": "cross-env NODE_OPTIONS=--experimental-vm-modules vitest run"
 	},
 	"dependencies": {
-		"fflate": "^0.8.0",
+		"fflate": "^0.8.1",
 		"hono": "^3.6.3"
 	},
 	"devDependencies": {
@@ -19,9 +19,9 @@
 		"@microsoft/eslint-formatter-sarif": "^3.0.0",
 		"@miniflare/kv": "^2.14.1",
 		"@miniflare/storage-memory": "^2.14.1",
-		"@types/node": "^20.6.0",
-		"@typescript-eslint/eslint-plugin": "^6.6.0",
-		"@typescript-eslint/parser": "^6.7.0",
+		"@types/node": "^20.6.2",
+		"@typescript-eslint/eslint-plugin": "^6.7.2",
+		"@typescript-eslint/parser": "^6.7.2",
 		"cross-env": "^7.0.3",
 		"esbuild": "^0.19.3",
 		"eslint": "^8.49.0",
@@ -29,7 +29,7 @@
 		"execa": "^8.0.1",
 		"kleur": "^4.1.5",
 		"prettier": "^3.0.3",
-		"tsx": "^3.12.8",
+		"tsx": "^3.12.10",
 		"typescript": "^5.2.2",
 		"vitest": "^0.34.4",
 		"vitest-environment-miniflare": "^2.14.1",
