@@ -1,19 +1,19 @@
-import { MiddlewareHandler } from "hono";
+import { type MiddlewareHandler } from "hono";
+
 import { startTime, endTime } from "./utils/timing";
 import { UserDataStore } from "./store";
 
-import type { Bindings, Variables } from "./env";
+import type { Env } from "./env";
 
-export const auth: MiddlewareHandler<{
-	Bindings: Bindings;
-	Variables: Variables;
-}> = async (ctx, next) => {
+type VendflareMiddleware = MiddlewareHandler<Env>;
+
+export const auth: () => VendflareMiddleware = () => async (ctx, next) => {
 	startTime(ctx, "auth");
 	ctx.set("userId", null);
 	ctx.set("store", null);
 
-	const authHeader = ctx.req.headers.get("authorization");
-	if (authHeader === null) {
+	const authHeader = ctx.req.header("authorization");
+	if (!authHeader) {
 		endTime(ctx, "auth");
 		await next();
 		return;
@@ -63,7 +63,7 @@ export const auth: MiddlewareHandler<{
 	await next();
 };
 
-export const requireAuth: MiddlewareHandler = async (ctx, next) => {
+export const requireAuth: () => VendflareMiddleware = () => async (ctx, next) => {
 	const userId = ctx.get("userId");
 	if (userId === null) {
 		return ctx.json({ error: "Unauthorized" }, 401);

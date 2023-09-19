@@ -51,7 +51,6 @@ const revision = await execa("git", ["rev-parse", "--short", "HEAD"]).then((p) =
 
 const commonDefines = {
 	VENDFLARE_REVISION: JSON.stringify(revision),
-	VENDFLARE_SINGLE_BACKEND: JSON.stringify(null),
 } as const;
 
 const honoModules = ["cors", "timing", "secure-headers"];

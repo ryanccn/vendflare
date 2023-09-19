@@ -6,6 +6,14 @@ import { deflateSync, inflateSync } from "fflate";
 
 import { makeUrl, getTestingKV } from "./utils";
 
+test("unauthorized settings access is forbidden", async () => {
+	const KV = await getTestingKV({ initializeUser: true });
+
+	const res = await worker.fetch(new Request(makeUrl("/v1/settings"), { method: "GET", headers: {} }), { KV });
+
+	expect(res.status).toEqual(401);
+});
+
 test("empty settings returns 404", async () => {
 	const KV = await getTestingKV({ initializeUser: true });
 
@@ -24,7 +32,7 @@ test("settings are saved", async () => {
 		new Request(makeUrl("/v1/settings"), {
 			method: "PUT",
 			body: deflateSync(new TextEncoder().encode(JSON.stringify({ test: "data" }))),
-			headers: { "content-type": "application/octet-stream", authorization: btoa("bleh:TESTING_USER") },
+			headers: { "content-type": "application/octet-stream", "authorization": btoa("bleh:TESTING_USER") },
 		}),
 		{ KV },
 	);
@@ -53,12 +61,27 @@ test("size limit is enforced", async () => {
 		new Request(makeUrl("/v1/settings"), {
 			method: "PUT",
 			body: deflateSync(new TextEncoder().encode(JSON.stringify({ test: "data" }))),
-			headers: { "content-type": "application/octet-stream", authorization: btoa("bleh:TESTING_USER") },
+			headers: { "content-type": "application/octet-stream", "authorization": btoa("bleh:TESTING_USER") },
 		}),
 		{ KV, SIZE_LIMIT: 1 },
 	);
 
 	expect(putRes.status).toEqual(413);
+});
+
+test("content-type is enforced", async () => {
+	const KV = await getTestingKV({ initializeUser: true });
+
+	const putRes = await worker.fetch(
+		new Request(makeUrl("/v1/settings"), {
+			method: "PUT",
+			body: "bleh",
+			headers: { "content-type": "text/plain; encoding=utf-8", "authorization": btoa("bleh:TESTING_USER") },
+		}),
+		{ KV },
+	);
+
+	expect(putRes.status).toEqual(400);
 });
 
 test("if-none-match header is observed", async () => {
@@ -68,7 +91,7 @@ test("if-none-match header is observed", async () => {
 		new Request(makeUrl("/v1/settings"), {
 			method: "PUT",
 			body: deflateSync(new TextEncoder().encode(JSON.stringify({ test: "data" }))),
-			headers: { "content-type": "application/octet-stream", Authorization: btoa("bleh:TESTING_USER") },
+			headers: { "content-type": "application/octet-stream", "Authorization": btoa("bleh:TESTING_USER") },
 		}),
 		{ KV },
 	);
@@ -80,7 +103,7 @@ test("if-none-match header is observed", async () => {
 	const getRes = await worker.fetch(
 		new Request(makeUrl("/v1/settings"), {
 			method: "GET",
-			headers: { authorization: btoa("bleh:TESTING_USER"), "if-none-match": `${written}` },
+			headers: { "authorization": btoa("bleh:TESTING_USER"), "if-none-match": `${written}` },
 		}),
 		{ KV },
 	);
@@ -90,7 +113,7 @@ test("if-none-match header is observed", async () => {
 	const getRes2 = await worker.fetch(
 		new Request(makeUrl("/v1/settings"), {
 			method: "GET",
-			headers: { authorization: btoa("bleh:TESTING_USER"), "if-none-match": `${written + 1}` },
+			headers: { "authorization": btoa("bleh:TESTING_USER"), "if-none-match": `${written + 1}` },
 		}),
 		{ KV },
 	);

@@ -51,18 +51,18 @@ One recommended optimization is to use the build that only supports the storage 
 
 | Build                    | KV  | Durable Objects | Hono preset | Size   |
 | ------------------------ | --- | --------------- | ----------- | ------ |
-| `dist/worker.js`         | ✅  | ✅              | Default     | ~33 kB |
-| `dist/worker.kv.js`      | ✅  | ❌              | Default     | ~29 kB |
-| `dist/worker.do.js`      | ❌  | ✅              | Default     | ~30 kB |
-| `dist/worker.tiny.js`    | ✅  | ✅              | Tiny        | ~26 kB |
-| `dist/worker.kv.tiny.js` | ✅  | ❌              | Tiny        | ~22 kB |
-| `dist/worker.do.tiny.js` | ❌  | ✅              | Tiny        | ~23 kB |
+| `dist/worker.js`         | ✅  | ✅              | Default     | ~40 kB |
+| `dist/worker.kv.js`      | ✅  | ❌              | Default     | ~38 kB |
+| `dist/worker.do.js`      | ❌  | ✅              | Default     | ~39 kB |
+| `dist/worker.tiny.js`    | ✅  | ✅              | Tiny        | ~32 kB |
+| `dist/worker.kv.tiny.js` | ✅  | ❌              | Tiny        | ~30 kB |
+| `dist/worker.do.tiny.js` | ❌  | ✅              | Tiny        | ~32 kB |
 
 You can change what build you use by going to `wrangler.toml` and editing the `main` field to the path of the build that you want to use.
 
 ## Testing
 
-Tests are powered by [Vitest](https://vitest.dev/). They all assume a KV binding environment, so make sure the `KV` binding is set when running the tests. `vitest-environment-miniflare` ensures an isolated storage environment.
+Tests are powered by [Vitest](https://vitest.dev/). Tests utilize an in-memory temporary KV store that emulates Cloudflare Workers' actual runtime KV binding.
 
 ## License
 

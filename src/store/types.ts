@@ -1,5 +1,5 @@
 export type UserDataType = {
-	secret: string;
+	"secret": string;
 	"settings:value": string;
 	"settings:written": string;
 };

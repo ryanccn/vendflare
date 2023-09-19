@@ -13,5 +13,6 @@ module.exports = {
 		"unicorn/no-null": "off",
 		"unicorn/filename-case": ["warn", { case: "camelCase" }],
 		"unicorn/no-nested-ternary": "off",
+		"unicorn/consistent-function-scoping": "off",
 	},
 };

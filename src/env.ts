@@ -1,6 +1,6 @@
 import { UserDataStore } from "./store";
 
-export type Env = {
+export type Bindings = {
 	STORAGE_BACKEND?: "kv" | "do";
 	KV?: KVNamespace;
 	USER_DATA?: DurableObjectNamespace;
@@ -15,9 +15,12 @@ export type Env = {
 	ALLOWED_USERS?: string;
 };
 
-export type Bindings = Env;
-
 export type Variables = {
 	userId: string | null;
 	store: UserDataStore | null;
+};
+
+export type Env = {
+	Bindings: Bindings;
+	Variables: Variables;
 };

@@ -2,25 +2,25 @@ import * as kvBackend from "./kv";
 import * as doBackend from "./do";
 
 import { userDataKeys, type UserDataType } from "./types";
-import type { Env } from "~/env";
+import type { Bindings } from "~/env";
 
 export class UserDataStore {
-	env: Env;
+	bindings: Bindings;
 	userId: string;
 
 	kv?: KVNamespace;
 	do?: DurableObjectNamespace;
 
-	constructor(env: Env, userId: string) {
-		this.env = env;
+	constructor(bindings: Bindings, userId: string) {
+		this.bindings = bindings;
 		this.userId = userId;
 
-		durable: if (env.USER_DATA) {
-			this.do = env.USER_DATA;
+		durable: if (bindings.USER_DATA) {
+			this.do = this.bindings.USER_DATA;
 		}
 
-		kv: if (env.KV) {
-			this.kv = env.KV;
+		kv: if (bindings.KV) {
+			this.kv = this.bindings.KV;
 		}
 
 		if (!this.do && !this.kv) {

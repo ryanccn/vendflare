@@ -11,10 +11,10 @@ import { inflateSync as inflate, deflateSync as deflate } from "fflate";
 import { toHex } from "./utils/toHex";
 import { poweredBy } from "./utils/poweredBy";
 
-import type { Bindings, Variables } from "./env";
+import type { Env } from "./env";
 import { endTime, startTime } from "./utils/timing";
 
-const app = new Hono<{ Bindings: Bindings; Variables: Variables }>();
+const app = new Hono<Env>();
 
 app.use(
 	"*",
@@ -28,11 +28,11 @@ app.use("*", poweredBy());
 app.use("*", secureHeaders());
 app.use("*", timing());
 
-app.use("*", auth);
+app.use("*", auth());
 
 app.get("/", (c) => c.redirect(c.env.ROOT_REDIRECT || "https://github.com/ryanccn/vendflare", 302));
 
-app.use("/v1/settings", requireAuth);
+app.use("/v1/settings", requireAuth());
 
 app.get("/v1/settings", async (ctx) => {
 	const store = ctx.get("store")!;
@@ -45,7 +45,7 @@ app.get("/v1/settings", async (ctx) => {
 		return ctx.notFound();
 	}
 
-	const ifNoneMatch = ctx.req.headers.get("if-none-match");
+	const ifNoneMatch = ctx.req.header("if-none-match");
 	if (ifNoneMatch && ifNoneMatch === written) {
 		return ctx.body(null, 304);
 	}
@@ -66,7 +66,7 @@ app.get("/v1/settings", async (ctx) => {
 app.put("/v1/settings", async (ctx) => {
 	const store = ctx.get("store")!;
 
-	if (ctx.req.headers.get("content-type") !== "application/octet-stream") {
+	if (ctx.req.header("content-type") !== "application/octet-stream") {
 		return ctx.json({ error: "Content type must be application/octet-stream" }, 400);
 	}
 
@@ -109,7 +109,7 @@ app.delete("/v1/settings", async (ctx) => {
 
 app.get("/v1", (c) => c.json({ ping: "pong" }));
 
-app.delete("/v1/", requireAuth);
+app.delete("/v1/", requireAuth());
 app.delete("/v1/", async (ctx) => {
 	const store = ctx.get("store")!;
 
