@@ -120,3 +120,38 @@ test("if-none-match header is observed", async () => {
 
 	expect(getRes2.status).toEqual(200);
 });
+
+test("settings are deleted", async () => {
+	const KV = await getTestingKV({ initializeUser: true });
+
+	const putRes = await worker.fetch(
+		new Request(makeUrl("/v1/settings"), {
+			method: "PUT",
+			body: deflateSync(new TextEncoder().encode(JSON.stringify({ test: "data" }))),
+			headers: { "content-type": "application/octet-stream", "authorization": btoa("bleh:TESTING_USER") },
+		}),
+		{ KV },
+	);
+
+	expect(putRes.status).toEqual(200);
+
+	const getRes = await worker.fetch(
+		new Request(makeUrl("/v1/settings"), {
+			method: "DELETE",
+			headers: { authorization: btoa("bleh:TESTING_USER") },
+		}),
+		{ KV },
+	);
+
+	expect(getRes.status).toEqual(204);
+
+	const checkRes = await worker.fetch(
+		new Request(makeUrl("/v1/settings"), {
+			method: "GET",
+			headers: { authorization: btoa("bleh:TESTING_USER") },
+		}),
+		{ KV },
+	);
+
+	expect(checkRes.status).toEqual(404);
+});

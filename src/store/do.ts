@@ -2,6 +2,7 @@ import { Hono } from "hono";
 import type { UserDataType } from "./types";
 
 const FAKE_HOST = "https://do.vendflare.ryanccn.dev";
+const fakeHost = (path: string) => new URL(path, FAKE_HOST);
 
 export class UserData {
 	state: DurableObjectState;
@@ -49,7 +50,7 @@ export const get = async <K extends keyof UserDataType>(
 	object: DurableObjectStub,
 	key: K,
 ): Promise<UserDataType[K] | null> => {
-	const req = new Request(`${FAKE_HOST}/${encodeURIComponent(key)}`);
+	const req = new Request(fakeHost(`/${encodeURIComponent(key)}`));
 	const res = await object.fetch(req);
 
 	if (!res.ok) {
@@ -65,7 +66,7 @@ export const get = async <K extends keyof UserDataType>(
 };
 
 export const put = async <K extends keyof UserDataType>(object: DurableObjectStub, key: K, value: UserDataType[K]) => {
-	const req = new Request(`${FAKE_HOST}/${encodeURIComponent(key)}`, {
+	const req = new Request(fakeHost(`/${encodeURIComponent(key)}`), {
 		method: "PUT",
 		body: JSON.stringify({ value }),
 		headers: { "content-type": "application/json" },
@@ -78,9 +79,7 @@ export const put = async <K extends keyof UserDataType>(object: DurableObjectStu
 };
 
 export const del = async <K extends keyof UserDataType>(object: DurableObjectStub, key: K) => {
-	const req = new Request(`${FAKE_HOST}/${encodeURIComponent(key)}`, {
-		method: "DELETE",
-	});
+	const req = new Request(fakeHost(`/${encodeURIComponent(key)}`), { method: "DELETE" });
 	const res = await object.fetch(req);
 
 	if (!res.ok) {
@@ -89,7 +88,7 @@ export const del = async <K extends keyof UserDataType>(object: DurableObjectStu
 };
 
 export const delAll = async (object: DurableObjectStub) => {
-	const req = new Request(`${FAKE_HOST}/`, {
+	const req = new Request(fakeHost("/"), {
 		method: "DELETE",
 	});
 	const res = await object.fetch(req);
