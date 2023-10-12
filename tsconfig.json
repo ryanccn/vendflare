@@ -4,7 +4,7 @@
 		"target": "es2022",
 		"lib": ["es2022"],
 		"jsx": "react",
-		"moduleResolution": "node",
+		"moduleResolution": "bundler",
 		"paths": { "~/*": ["./src/*"] },
 		"types": ["@cloudflare/workers-types"],
 		"resolveJsonModule": true,
