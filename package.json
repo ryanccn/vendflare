@@ -19,7 +19,7 @@
 		"@microsoft/eslint-formatter-sarif": "^3.0.0",
 		"@miniflare/kv": "^2.14.1",
 		"@miniflare/storage-memory": "^2.14.1",
-		"@types/node": "^20.8.4",
+		"@types/node": "^20.8.6",
 		"@typescript-eslint/eslint-plugin": "^6.7.5",
 		"@typescript-eslint/parser": "^6.7.5",
 		"cross-env": "^7.0.3",
@@ -33,7 +33,7 @@
 		"typescript": "^5.2.2",
 		"vitest": "^0.34.6",
 		"vitest-environment-miniflare": "^2.14.1",
-		"wrangler": "^3.12.0"
+		"wrangler": "^3.13.1"
 	},
-	"packageManager": "pnpm@8.9.0"
+	"packageManager": "pnpm@8.9.2"
 }
