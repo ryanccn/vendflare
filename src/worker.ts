@@ -9,6 +9,7 @@ import { UserDataStore } from "./store";
 import { inflateSync as inflate, deflateSync as deflate } from "fflate";
 
 import { uint8ArrayToHex } from "uint8array-extras";
+import { analytics } from "./analytics";
 import { poweredBy } from "./utils/poweredBy";
 
 import type { Env } from "./env";
@@ -28,6 +29,7 @@ app.use("*", poweredBy());
 app.use("*", secureHeaders());
 app.use("*", timing());
 
+app.use("*", analytics());
 app.use("*", auth());
 
 app.get("/", (c) => c.redirect(c.env.ROOT_REDIRECT || "https://github.com/ryanccn/vendflare", 302));
@@ -70,7 +72,7 @@ app.put("/v1/settings", async (ctx) => {
 		return ctx.json({ error: "Content type must be application/octet-stream" }, 400);
 	}
 
-	if (!ctx.req.body) {
+	if (!ctx.req.raw.body) {
 		return ctx.json({ error: "No body provided" }, 400);
 	}
 

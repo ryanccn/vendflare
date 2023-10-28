@@ -6,18 +6,6 @@
 		"jsx": "react",
 		"moduleResolution": "bundler",
 		"types": ["node"],
-		"resolveJsonModule": true,
-		"allowJs": true,
-		"checkJs": true,
-		"noEmit": true,
-		"isolatedModules": true,
-		"allowSyntheticDefaultImports": true,
-		"esModuleInterop": true,
-		"forceConsistentCasingInFileNames": true,
-		"strict": true,
-		"strictNullChecks": true,
-		"useUnknownInCatchVariables": true,
-		"skipLibCheck": true,
 		"composite": true
 	},
 	"include": ["build.mts"]

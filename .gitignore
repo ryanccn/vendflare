@@ -2,6 +2,7 @@
 .localized
 
 node_modules/
+*.tsbuildinfo
 
 .dev.vars
 .wrangler/
