@@ -1,12 +1,12 @@
 {
 	"compilerOptions": {
-		"module": "es2022",
-		"target": "es2022",
-		"lib": ["es2022"],
+		"module": "esnext",
+		"target": "esnext",
+		"lib": ["esnext"],
 		"jsx": "react",
-		"moduleResolution": "node",
+		"moduleResolution": "bundler",
 		"paths": { "@src/*": ["../src/*"], "@dist/*": ["../dist/*"] },
-		"types": ["@cloudflare/workers-types", "vitest-environment-miniflare/globals"],
+		"types": ["@cloudflare/workers-types"],
 		"resolveJsonModule": true,
 		"allowJs": true,
 		"checkJs": true,
@@ -18,8 +18,9 @@
 		"strict": true,
 		"strictNullChecks": true,
 		"useUnknownInCatchVariables": true,
-		"skipLibCheck": true
+		"skipLibCheck": true,
+		"composite": true
 	},
-	"include": ["**/*.ts"],
+	"include": ["test/**/*.ts"],
 	"exclude": ["node_modules", "**/node_modules"]
 }

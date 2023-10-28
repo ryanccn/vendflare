@@ -5,7 +5,8 @@
 		"lib": ["esnext"],
 		"jsx": "react",
 		"moduleResolution": "bundler",
-		"types": ["node"],
+		"paths": { "~/*": ["./src/*"] },
+		"types": ["@cloudflare/workers-types"],
 		"resolveJsonModule": true,
 		"allowJs": true,
 		"checkJs": true,
@@ -18,7 +19,9 @@
 		"strictNullChecks": true,
 		"useUnknownInCatchVariables": true,
 		"skipLibCheck": true,
+		"allowUnusedLabels": true,
 		"composite": true
 	},
-	"include": ["build.mts"]
+	"include": ["src/**/*.ts"],
+	"exclude": ["node_modules", "**/node_modules"]
 }

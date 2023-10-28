@@ -1,26 +1,3 @@
 {
-	"compilerOptions": {
-		"module": "es2022",
-		"target": "es2022",
-		"lib": ["es2022"],
-		"jsx": "react",
-		"moduleResolution": "bundler",
-		"paths": { "~/*": ["./src/*"] },
-		"types": ["@cloudflare/workers-types"],
-		"resolveJsonModule": true,
-		"allowJs": true,
-		"checkJs": true,
-		"noEmit": true,
-		"isolatedModules": true,
-		"allowSyntheticDefaultImports": true,
-		"esModuleInterop": true,
-		"forceConsistentCasingInFileNames": true,
-		"strict": true,
-		"strictNullChecks": true,
-		"useUnknownInCatchVariables": true,
-		"skipLibCheck": true,
-		"allowUnusedLabels": true
-	},
-	"include": ["**/*.ts"],
-	"exclude": ["node_modules", "**/node_modules", "build.mts", "test/**/*.ts"]
+	"extends": ["./tsconfig.node.json", "./tsconfig.test.json", "./tsconfig.worker.json"]
 }

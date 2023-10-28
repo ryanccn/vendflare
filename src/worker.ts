@@ -8,7 +8,7 @@ import { UserDataStore } from "./store";
 
 import { inflateSync as inflate, deflateSync as deflate } from "fflate";
 
-import { toHex } from "./utils/toHex";
+import { uint8ArrayToHex } from "uint8array-extras";
 import { poweredBy } from "./utils/poweredBy";
 
 import type { Env } from "./env";
@@ -178,7 +178,7 @@ app.get("/v1/oauth/callback", async (ctx) => {
 		const randValues = new Uint8Array(64);
 		crypto.getRandomValues(randValues);
 
-		secret = toHex(randValues);
+		secret = uint8ArrayToHex(randValues);
 		await store.put("secret", secret);
 
 		endTime(ctx, "generateSecret");
