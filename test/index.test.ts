@@ -21,7 +21,7 @@ test("returns custom redirect", async () => {
 });
 
 test("ping pong", async () => {
-	const res = await worker.fetch(new Request(makeUrl("/v1")));
+	const res = await worker.fetch(new Request(makeUrl("/v1")), {});
 	expect(res.ok).toEqual(true);
 
 	const data = await res.json();
@@ -29,7 +29,7 @@ test("ping pong", async () => {
 });
 
 test("x-powered-by header", async () => {
-	const res = await worker.fetch(new Request(makeUrl("/v1")));
+	const res = await worker.fetch(new Request(makeUrl("/v1")), {});
 	expect(res.ok).toEqual(true);
 	expect(res.headers.get("x-powered-by")).toMatch(/^vendflare@[\dA-Za-z]+$/);
 });

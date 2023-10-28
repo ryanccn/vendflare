@@ -2,8 +2,9 @@ import type { MiddlewareHandler } from "hono";
 import type { Env } from "./env";
 
 const copyHeader = (from: Headers, to: Headers, key: string, overrideToKey?: string) => {
-	for (const fromValue of from.getAll(key)) {
-		to.append(overrideToKey ?? key, fromValue);
+	const value = from.get(key);
+	if (value) {
+		to.set(overrideToKey ?? key, value);
 	}
 };
 
