@@ -8,6 +8,13 @@ const copyHeader = (from: Headers, to: Headers, key: string, overrideToKey?: str
 	}
 };
 
+type PlausibleEventPayload = {
+	name: "pageview";
+	url: string;
+	domain: string;
+	referrer?: string;
+};
+
 export const recordEvent = async ({ url, headers }: { url: string | URL; headers: Headers }) => {
 	const eventHeaders = new Headers();
 	eventHeaders.set("content-type", "application/json");
@@ -16,11 +23,16 @@ export const recordEvent = async ({ url, headers }: { url: string | URL; headers
 	copyHeader(headers, eventHeaders, "x-forwarded-for");
 	copyHeader(headers, eventHeaders, "cf-connecting-ip", "x-forwarded-for");
 
-	const body = {
+	const body: PlausibleEventPayload = {
 		name: "pageview",
 		url: url.toString(),
 		domain: new URL(url).host,
 	};
+
+	const referrer = headers.get("referer");
+	if (referrer) {
+		body.referrer = referrer;
+	}
 
 	await fetch("https://plausible.io/api/event", {
 		method: "POST",
