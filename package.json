@@ -27,7 +27,7 @@
 		"cross-env": "^7.0.3",
 		"esbuild": "^0.19.5",
 		"eslint": "^8.52.0",
-		"eslint-plugin-unicorn": "^48.0.1",
+		"eslint-plugin-unicorn": "^49.0.0",
 		"execa": "^8.0.1",
 		"kleur": "^4.1.5",
 		"prettier": "^3.0.3",
