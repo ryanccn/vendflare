@@ -12,8 +12,8 @@ dependencies:
     specifier: ^3.9.0
     version: 3.9.0
   uint8array-extras:
-    specifier: ^0.4.0
-    version: 0.4.0
+    specifier: ^0.5.0
+    version: 0.5.0
 
 devDependencies:
   '@cloudflare/workers-types':
@@ -2956,8 +2956,8 @@ packages:
     resolution: {integrity: sha512-uY/99gMLIOlJPwATcMVYfqDSxUR9//AUcgZMzwfSTJPDKzA1S8mX4VLqa+fiAtveraQUBCz4FFcwVZBGbwBXIw==}
     dev: true
 
-  /uint8array-extras@0.4.0:
-    resolution: {integrity: sha512-N1KIHm9pkTFK+nGrJcUy59B4mOuM9MrpCIgyd33Pz7SyDkV7hPanF7miepz4NST+r8li5aaf8LNol8k+SDBhDA==}
+  /uint8array-extras@0.5.0:
+    resolution: {integrity: sha512-CKAKa+/rjCblsuGrcmIJLluHcZMYKcMwgdhAZZEnSplFFGCuGKF6e2L+CeVXK0zX5rYyerrqG2dnHIANm3i9qA==}
     engines: {node: '>=18'}
     dev: false
 
