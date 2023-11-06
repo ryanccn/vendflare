@@ -21,7 +21,7 @@
 		"@microsoft/eslint-formatter-sarif": "^3.0.0",
 		"@miniflare/kv": "^2.14.1",
 		"@miniflare/storage-memory": "^2.14.1",
-		"@types/node": "^20.8.9",
+		"@types/node": "^20.8.10",
 		"@typescript-eslint/eslint-plugin": "^6.9.0",
 		"@typescript-eslint/parser": "^6.9.0",
 		"cross-env": "^7.0.3",
