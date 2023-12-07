@@ -21,7 +21,8 @@ export const recordEvent = async ({ url, headers }: { url: string | URL; headers
 
 	copyHeader(headers, eventHeaders, "user-agent");
 	copyHeader(headers, eventHeaders, "x-forwarded-for");
-	copyHeader(headers, eventHeaders, "cf-connecting-ip", "x-forwarded-for");
+	copyHeader(headers, eventHeaders, "x-real-ip");
+	copyHeader(headers, eventHeaders, "cf-connecting-ip");
 
 	const body: PlausibleEventPayload = {
 		name: "pageview",
