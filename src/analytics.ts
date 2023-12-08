@@ -43,9 +43,9 @@ export const recordEvent = async ({ url, headers }: { url: string | URL; headers
 };
 
 export const analytics: () => MiddlewareHandler<Env> = () => async (ctx, next) => {
-	if (ctx.env.ANALYTICS_ENABLED !== undefined) {
+	await next();
+
+	if (ctx.res.ok && ctx.env.ANALYTICS_ENABLED !== undefined) {
 		ctx.executionCtx.waitUntil(recordEvent({ url: ctx.req.url, headers: ctx.req.raw.headers }));
 	}
-
-	await next();
 };
