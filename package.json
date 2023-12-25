@@ -13,7 +13,7 @@
 	},
 	"dependencies": {
 		"fflate": "^0.8.1",
-		"hono": "^3.11.7",
+		"hono": "^3.11.10",
 		"uint8array-extras": "^1.0.0"
 	},
 	"devDependencies": {
