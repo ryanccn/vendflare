@@ -34,7 +34,7 @@
 		"tsx": "^4.6.2",
 		"typescript": "^5.3.3",
 		"vitest": "^1.0.4",
-		"wrangler": "^3.20.0"
+		"wrangler": "^3.22.1"
 	},
 	"packageManager": "pnpm@8.12.0"
 }
