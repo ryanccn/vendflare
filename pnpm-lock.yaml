@@ -9,8 +9,8 @@ dependencies:
     specifier: ^0.8.1
     version: 0.8.1
   hono:
-    specifier: ^3.11.10
-    version: 3.11.10
+    specifier: ^3.11.11
+    version: 3.11.11
   uint8array-extras:
     specifier: ^1.0.0
     version: 1.0.0
@@ -1795,8 +1795,8 @@ packages:
       function-bind: 1.1.2
     dev: true
 
-  /hono@3.11.10:
-    resolution: {integrity: sha512-vizPp5PfVq5dwgN+EM+8v7RHlvrrEbnpkHtM2GMsl6KICA/MvWcnEMJ5L8SjYPxueB8VJMwc6nzzgKj5Vovp7g==}
+  /hono@3.11.11:
+    resolution: {integrity: sha512-E3Xv7LnOjg7VXiu+t+YplDEYXvkxpcTCzZ3RUFQlcNXclSME8aiQAYwWpJPT6MQRRpa4TG5RlOolqeYEDEK3wg==}
     engines: {node: '>=16.0.0'}
     dev: false
 
