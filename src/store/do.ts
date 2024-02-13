@@ -27,6 +27,7 @@ export class UserData {
 			})
 			.put(async (c) => {
 				const key = c.req.param("key");
+				// eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
 				const { value } = await c.req.json();
 
 				await this.state.storage.put(key, value);
@@ -57,11 +58,12 @@ export const get = async <K extends keyof UserDataType>(
 		throw new Error(`Failed to get key "${key}" from Durable Object ${object.id}`);
 	}
 
+	// eslint-disable-next-line @typescript-eslint/no-unnecessary-type-assertion
 	const { value } = (await res.json()) as { value: unknown };
 
 	if (value === undefined || value === null) return null;
 
-	// eslint-disable-next-line @typescript-eslint/no-explicit-any
+	// eslint-disable-next-line @typescript-eslint/no-explicit-any, @typescript-eslint/no-unsafe-return
 	return value as any;
 };
 

@@ -147,6 +147,7 @@ app.get("/v1/oauth/callback", async (ctx) => {
 		return ctx.json({ error: "Failed to authorize with Discord" }, 401);
 	}
 
+	// eslint-disable-next-line @typescript-eslint/no-unnecessary-type-assertion
 	const { access_token } = (await tokenRes.json()) as { access_token: string };
 
 	endTime(ctx, "obtainDiscordToken");
@@ -160,6 +161,7 @@ app.get("/v1/oauth/callback", async (ctx) => {
 		return ctx.json({ error: "Failed to retrieve account information" }, 500);
 	}
 
+	// eslint-disable-next-line @typescript-eslint/no-unnecessary-type-assertion
 	const { id: userId } = (await userRes.json()) as { id: string };
 
 	endTime(ctx, "fetchUserInfo");
@@ -189,7 +191,7 @@ app.get("/v1/oauth/callback", async (ctx) => {
 	return ctx.json({ secret });
 });
 
-app.get("/v1/oauth/settings", async (ctx) => {
+app.get("/v1/oauth/settings", (ctx) => {
 	return ctx.json({
 		clientId: ctx.env.DISCORD_CLIENT_ID,
 		redirectUri: ctx.env.DISCORD_REDIRECT_URI,

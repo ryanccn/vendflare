@@ -49,6 +49,7 @@ test("settings are saved", async () => {
 
 	expect(getRes.ok).toEqual(true);
 
+	// eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
 	const data = JSON.parse(new TextDecoder().decode(inflateSync(new Uint8Array(await getRes.arrayBuffer()))));
 
 	expect(data).toEqual({ test: "data" });
@@ -98,6 +99,7 @@ test("if-none-match header is observed", async () => {
 
 	expect(putRes.ok).toEqual(true);
 
+	// eslint-disable-next-line @typescript-eslint/no-unnecessary-type-assertion
 	const { written } = (await putRes.json()) as { written: number };
 
 	const getRes = await worker.fetch(

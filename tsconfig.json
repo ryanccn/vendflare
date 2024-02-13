@@ -1,19 +1,34 @@
 {
-	"extends": ["./tsconfig.node.json", "./tsconfig.test.json", "./tsconfig.worker.json"],
 	"compilerOptions": {
+		"module": "esnext",
+		"target": "esnext",
+		"moduleResolution": "bundler",
 		"resolveJsonModule": true,
+
 		"allowJs": true,
-		"checkJs": true,
+		"checkJs": false,
 		"noEmit": true,
+		"incremental": true,
+
 		"isolatedModules": true,
 		"allowSyntheticDefaultImports": true,
 		"esModuleInterop": true,
 		"forceConsistentCasingInFileNames": true,
+		"moduleDetection": "force",
+
+		"types": ["@cloudflare/workers-types"],
+		"skipLibCheck": true,
+
 		"strict": true,
 		"strictNullChecks": true,
 		"useUnknownInCatchVariables": true,
-		"skipLibCheck": true,
 		"allowUnusedLabels": true,
-		"incremental": true
-	}
+
+		"paths": {
+			"~/*": ["./src/*"],
+			"@src/*": ["./src/*"],
+			"@dist/*": ["./dist/*"]
+		}
+	},
+	"include": ["**/*.js", "**/*.ts"]
 }

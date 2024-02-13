@@ -7,7 +7,7 @@ export const get = async <K extends keyof UserDataType>(
 ): Promise<UserDataType[K] | null> => {
 	const value = await kv.get(userId + ":" + key, "text");
 
-	// eslint-disable-next-line @typescript-eslint/no-explicit-any
+	// eslint-disable-next-line @typescript-eslint/no-explicit-any, @typescript-eslint/no-unsafe-return
 	return value as any;
 };
 
