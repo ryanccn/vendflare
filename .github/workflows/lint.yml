@@ -29,6 +29,9 @@ jobs:
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
 
+      - name: Build
+        run: pnpm run build
+
       - name: Lint
         run: pnpm run lint -f @microsoft/eslint-formatter-sarif -o /tmp/lint.sarif
         continue-on-error: true
