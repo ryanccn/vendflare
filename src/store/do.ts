@@ -1,7 +1,7 @@
-import { Hono } from "hono";
-import type { UserDataType } from "./types";
+import { Hono } from 'hono';
+import type { UserDataType } from './types';
 
-const FAKE_HOST = "https://do.vendflare.ryanccn.dev";
+const FAKE_HOST = 'https://do.vendflare.ryanccn.dev';
 const fakeHost = (path: string) => new URL(path, FAKE_HOST);
 
 export class UserData {
@@ -13,20 +13,20 @@ export class UserData {
 
 		this.router = new Hono();
 
-		this.router.delete("/", async (c) => {
+		this.router.delete('/', async (c) => {
 			await this.state.storage.deleteAll();
 			return c.json({ ok: true });
 		});
 
 		this.router
-			.get("/:key", async (c) => {
-				const key = c.req.param("key");
+			.get('/:key', async (c) => {
+				const key = c.req.param('key');
 				const value = await this.state.storage.get(key);
 
 				return c.json({ ok: true, value });
 			})
 			.put(async (c) => {
-				const key = c.req.param("key");
+				const key = c.req.param('key');
 				// eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
 				const { value } = await c.req.json();
 
@@ -35,7 +35,7 @@ export class UserData {
 				return c.json({ ok: true });
 			})
 			.delete(async (c) => {
-				const key = c.req.param("key");
+				const key = c.req.param('key');
 				await this.state.storage.delete(key);
 
 				return c.json({ ok: true });
@@ -55,7 +55,7 @@ export const get = async <K extends keyof UserDataType>(
 	const res = await object.fetch(req);
 
 	if (!res.ok) {
-		throw new Error(`Failed to get key "${key}" from Durable Object ${object.id}`);
+		throw new Error(`Failed to get key "${key}" from Durable Object ${object.id.toString()}`);
 	}
 
 	// eslint-disable-next-line @typescript-eslint/no-unnecessary-type-assertion
@@ -69,33 +69,33 @@ export const get = async <K extends keyof UserDataType>(
 
 export const put = async <K extends keyof UserDataType>(object: DurableObjectStub, key: K, value: UserDataType[K]) => {
 	const req = new Request(fakeHost(`/${encodeURIComponent(key)}`), {
-		method: "PUT",
+		method: 'PUT',
 		body: JSON.stringify({ value }),
-		headers: { "content-type": "application/json" },
+		headers: { 'content-type': 'application/json' },
 	});
 	const res = await object.fetch(req);
 
 	if (!res.ok) {
-		throw new Error(`Failed to set key "${key}" on Durable Object ${object.id}`);
+		throw new Error(`Failed to set key "${key}" on Durable Object ${object.id.toString()}`);
 	}
 };
 
 export const del = async <K extends keyof UserDataType>(object: DurableObjectStub, key: K) => {
-	const req = new Request(fakeHost(`/${encodeURIComponent(key)}`), { method: "DELETE" });
+	const req = new Request(fakeHost(`/${encodeURIComponent(key)}`), { method: 'DELETE' });
 	const res = await object.fetch(req);
 
 	if (!res.ok) {
-		throw new Error(`Failed to delete key "${key}" from Durable Object ${object.id}`);
+		throw new Error(`Failed to delete key "${key}" from Durable Object ${object.id.toString()}`);
 	}
 };
 
 export const delAll = async (object: DurableObjectStub) => {
-	const req = new Request(fakeHost("/"), {
-		method: "DELETE",
+	const req = new Request(fakeHost('/'), {
+		method: 'DELETE',
 	});
 	const res = await object.fetch(req);
 
 	if (!res.ok) {
-		throw new Error(`Failed to delete all keys from Durable Object ${object.id}`);
+		throw new Error(`Failed to delete all keys from Durable Object ${object.id.toString()}`);
 	}
 };

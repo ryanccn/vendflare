@@ -1,38 +1,38 @@
-import { expect, test } from "vitest";
+import { expect, test } from 'vitest';
 
-import worker from "@dist/worker";
+import worker from '@dist/worker';
 
-import { deflateSync, inflateSync } from "fflate";
+import { deflateSync, inflateSync } from 'fflate';
 
-import { makeUrl, getTestingKV } from "./utils";
+import { makeUrl, getTestingKV } from './utils';
 
-test("unauthorized settings access is forbidden", async () => {
+test('unauthorized settings access is forbidden', async () => {
 	const KV = await getTestingKV({ initializeUser: true });
 
-	const res = await worker.fetch(new Request(makeUrl("/v1/settings"), { method: "GET", headers: {} }), { KV });
+	const res = await worker.fetch(new Request(makeUrl('/v1/settings'), { method: 'GET', headers: {} }), { KV });
 
 	expect(res.status).toEqual(401);
 });
 
-test("empty settings returns 404", async () => {
+test('empty settings returns 404', async () => {
 	const KV = await getTestingKV({ initializeUser: true });
 
 	const res = await worker.fetch(
-		new Request(makeUrl("/v1/settings"), { method: "GET", headers: { authorization: btoa("bleh:TESTING_USER") } }),
+		new Request(makeUrl('/v1/settings'), { method: 'GET', headers: { authorization: btoa('bleh:TESTING_USER') } }),
 		{ KV },
 	);
 
 	expect(res.status).toEqual(404);
 });
 
-test("settings are saved", async () => {
+test('settings are saved', async () => {
 	const KV = await getTestingKV({ initializeUser: true });
 
 	const putRes = await worker.fetch(
-		new Request(makeUrl("/v1/settings"), {
-			method: "PUT",
-			body: deflateSync(new TextEncoder().encode(JSON.stringify({ test: "data" }))),
-			headers: { "content-type": "application/octet-stream", "authorization": btoa("bleh:TESTING_USER") },
+		new Request(makeUrl('/v1/settings'), {
+			method: 'PUT',
+			body: deflateSync(new TextEncoder().encode(JSON.stringify({ test: 'data' }))),
+			headers: { 'content-type': 'application/octet-stream', 'authorization': btoa('bleh:TESTING_USER') },
 		}),
 		{ KV },
 	);
@@ -40,9 +40,9 @@ test("settings are saved", async () => {
 	expect(putRes.ok).toEqual(true);
 
 	const getRes = await worker.fetch(
-		new Request(makeUrl("/v1/settings"), {
-			method: "GET",
-			headers: { authorization: btoa("bleh:TESTING_USER") },
+		new Request(makeUrl('/v1/settings'), {
+			method: 'GET',
+			headers: { authorization: btoa('bleh:TESTING_USER') },
 		}),
 		{ KV },
 	);
@@ -52,17 +52,17 @@ test("settings are saved", async () => {
 	// eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
 	const data = JSON.parse(new TextDecoder().decode(inflateSync(new Uint8Array(await getRes.arrayBuffer()))));
 
-	expect(data).toEqual({ test: "data" });
+	expect(data).toEqual({ test: 'data' });
 });
 
-test("size limit is enforced", async () => {
+test('size limit is enforced', async () => {
 	const KV = await getTestingKV({ initializeUser: true });
 
 	const putRes = await worker.fetch(
-		new Request(makeUrl("/v1/settings"), {
-			method: "PUT",
-			body: deflateSync(new TextEncoder().encode(JSON.stringify({ test: "data" }))),
-			headers: { "content-type": "application/octet-stream", "authorization": btoa("bleh:TESTING_USER") },
+		new Request(makeUrl('/v1/settings'), {
+			method: 'PUT',
+			body: deflateSync(new TextEncoder().encode(JSON.stringify({ test: 'data' }))),
+			headers: { 'content-type': 'application/octet-stream', 'authorization': btoa('bleh:TESTING_USER') },
 		}),
 		{ KV, SIZE_LIMIT: 1 },
 	);
@@ -70,14 +70,14 @@ test("size limit is enforced", async () => {
 	expect(putRes.status).toEqual(413);
 });
 
-test("content-type is enforced", async () => {
+test('content-type is enforced', async () => {
 	const KV = await getTestingKV({ initializeUser: true });
 
 	const putRes = await worker.fetch(
-		new Request(makeUrl("/v1/settings"), {
-			method: "PUT",
-			body: "bleh",
-			headers: { "content-type": "text/plain; encoding=utf-8", "authorization": btoa("bleh:TESTING_USER") },
+		new Request(makeUrl('/v1/settings'), {
+			method: 'PUT',
+			body: 'bleh',
+			headers: { 'content-type': 'text/plain; encoding=utf-8', 'authorization': btoa('bleh:TESTING_USER') },
 		}),
 		{ KV },
 	);
@@ -85,14 +85,14 @@ test("content-type is enforced", async () => {
 	expect(putRes.status).toEqual(400);
 });
 
-test("if-none-match header is observed", async () => {
+test('if-none-match header is observed', async () => {
 	const KV = await getTestingKV({ initializeUser: true });
 
 	const putRes = await worker.fetch(
-		new Request(makeUrl("/v1/settings"), {
-			method: "PUT",
-			body: deflateSync(new TextEncoder().encode(JSON.stringify({ test: "data" }))),
-			headers: { "content-type": "application/octet-stream", "Authorization": btoa("bleh:TESTING_USER") },
+		new Request(makeUrl('/v1/settings'), {
+			method: 'PUT',
+			body: deflateSync(new TextEncoder().encode(JSON.stringify({ test: 'data' }))),
+			headers: { 'content-type': 'application/octet-stream', 'Authorization': btoa('bleh:TESTING_USER') },
 		}),
 		{ KV },
 	);
@@ -103,9 +103,12 @@ test("if-none-match header is observed", async () => {
 	const { written } = (await putRes.json()) as { written: number };
 
 	const getRes = await worker.fetch(
-		new Request(makeUrl("/v1/settings"), {
-			method: "GET",
-			headers: { "authorization": btoa("bleh:TESTING_USER"), "if-none-match": `${written}` },
+		new Request(makeUrl('/v1/settings'), {
+			method: 'GET',
+			headers: {
+				'authorization': btoa('bleh:TESTING_USER'),
+				'if-none-match': `${written}`,
+			},
 		}),
 		{ KV },
 	);
@@ -113,9 +116,12 @@ test("if-none-match header is observed", async () => {
 	expect(getRes.status).toEqual(304);
 
 	const getRes2 = await worker.fetch(
-		new Request(makeUrl("/v1/settings"), {
-			method: "GET",
-			headers: { "authorization": btoa("bleh:TESTING_USER"), "if-none-match": `${written + 1}` },
+		new Request(makeUrl('/v1/settings'), {
+			method: 'GET',
+			headers: {
+				'authorization': btoa('bleh:TESTING_USER'),
+				'if-none-match': `${written + 1}`,
+			},
 		}),
 		{ KV },
 	);
@@ -123,14 +129,17 @@ test("if-none-match header is observed", async () => {
 	expect(getRes2.status).toEqual(200);
 });
 
-test("settings are deleted", async () => {
+test('settings are deleted', async () => {
 	const KV = await getTestingKV({ initializeUser: true });
 
 	const putRes = await worker.fetch(
-		new Request(makeUrl("/v1/settings"), {
-			method: "PUT",
-			body: deflateSync(new TextEncoder().encode(JSON.stringify({ test: "data" }))),
-			headers: { "content-type": "application/octet-stream", "authorization": btoa("bleh:TESTING_USER") },
+		new Request(makeUrl('/v1/settings'), {
+			method: 'PUT',
+			body: deflateSync(new TextEncoder().encode(JSON.stringify({ test: 'data' }))),
+			headers: {
+				'content-type': 'application/octet-stream',
+				'authorization': btoa('bleh:TESTING_USER'),
+			},
 		}),
 		{ KV },
 	);
@@ -138,9 +147,9 @@ test("settings are deleted", async () => {
 	expect(putRes.status).toEqual(200);
 
 	const getRes = await worker.fetch(
-		new Request(makeUrl("/v1/settings"), {
-			method: "DELETE",
-			headers: { authorization: btoa("bleh:TESTING_USER") },
+		new Request(makeUrl('/v1/settings'), {
+			method: 'DELETE',
+			headers: { authorization: btoa('bleh:TESTING_USER') },
 		}),
 		{ KV },
 	);
@@ -148,9 +157,9 @@ test("settings are deleted", async () => {
 	expect(getRes.status).toEqual(204);
 
 	const checkRes = await worker.fetch(
-		new Request(makeUrl("/v1/settings"), {
-			method: "GET",
-			headers: { authorization: btoa("bleh:TESTING_USER") },
+		new Request(makeUrl('/v1/settings'), {
+			method: 'GET',
+			headers: { authorization: btoa('bleh:TESTING_USER') },
 		}),
 		{ KV },
 	);

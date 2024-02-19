@@ -1,7 +1,7 @@
-import { UserDataStore } from "./store";
+import { UserDataStore } from './store';
 
 export type Bindings = {
-	STORAGE_BACKEND?: "kv" | "do";
+	STORAGE_BACKEND?: 'kv' | 'do';
 	KV?: KVNamespace;
 	USER_DATA?: DurableObjectNamespace;
 

@@ -1,15 +1,15 @@
-import { defineConfig } from "vitest/config";
-import { fileURLToPath } from "node:url";
-import { dirname, join } from "node:path";
+import { defineConfig } from 'vitest/config';
+import { fileURLToPath } from 'node:url';
+import { dirname, join } from 'node:path';
 
 const projectRoot = dirname(fileURLToPath(import.meta.url));
 
 export default defineConfig({
 	test: {
-		root: "./test",
+		root: './test',
 		alias: {
-			"@src": join(projectRoot, "src"),
-			"@dist": join(projectRoot, "dist"),
+			'@src': join(projectRoot, 'src'),
+			'@dist': join(projectRoot, 'dist'),
 		},
 	},
 });

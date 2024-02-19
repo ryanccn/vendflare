@@ -1,20 +1,22 @@
-import { type MiddlewareHandler } from "hono";
+/* eslint-disable unicorn/consistent-function-scoping */
 
-import { startTime, endTime } from "./utils/timing";
-import { UserDataStore } from "./store";
+import { type MiddlewareHandler } from 'hono';
 
-import type { Env } from "./env";
+import { startTime, endTime } from './utils/timing';
+import { UserDataStore } from './store';
+
+import type { Env } from './env';
 
 type VendflareMiddleware = MiddlewareHandler<Env>;
 
 export const auth: () => VendflareMiddleware = () => async (ctx, next) => {
-	startTime(ctx, "auth");
-	ctx.set("userId", null);
-	ctx.set("store", null);
+	startTime(ctx, 'auth');
+	ctx.set('userId', null);
+	ctx.set('store', null);
 
-	const authHeader = ctx.req.header("authorization");
+	const authHeader = ctx.req.header('authorization');
 	if (!authHeader) {
-		endTime(ctx, "auth");
+		endTime(ctx, 'auth');
 		await next();
 		return;
 	}
@@ -24,49 +26,49 @@ export const auth: () => VendflareMiddleware = () => async (ctx, next) => {
 	try {
 		token = atob(authHeader);
 	} catch {
-		endTime(ctx, "auth");
+		endTime(ctx, 'auth');
 		await next();
 		return;
 	}
 
-	const tokenSplit = token.split(":");
+	const tokenSplit = token.split(':');
 
 	if (tokenSplit.length !== 2) {
-		endTime(ctx, "auth");
+		endTime(ctx, 'auth');
 		await next();
 		return;
 	}
 
 	const [secret, userId] = tokenSplit;
 
-	if (ctx.env.ALLOWED_USERS && !ctx.env.ALLOWED_USERS.split(",").includes(userId)) {
-		endTime(ctx, "auth");
+	if (ctx.env.ALLOWED_USERS && !ctx.env.ALLOWED_USERS.split(',').includes(userId)) {
+		endTime(ctx, 'auth');
 		await next();
 		return;
 	}
 
 	const store = new UserDataStore(ctx.env, userId);
-	startTime(ctx, "getSecret");
-	const storedSecret = await store.get("secret");
-	endTime(ctx, "getSecret");
+	startTime(ctx, 'getSecret');
+	const storedSecret = await store.get('secret');
+	endTime(ctx, 'getSecret');
 
 	if (!storedSecret || storedSecret !== secret) {
-		endTime(ctx, "auth");
+		endTime(ctx, 'auth');
 		await next();
 		return;
 	}
 
-	ctx.set("userId", userId);
-	ctx.set("store", store);
+	ctx.set('userId', userId);
+	ctx.set('store', store);
 
-	endTime(ctx, "auth");
+	endTime(ctx, 'auth');
 	await next();
 };
 
 export const requireAuth: () => VendflareMiddleware = () => async (ctx, next) => {
-	const userId = ctx.get("userId");
+	const userId = ctx.get('userId');
 	if (userId === null) {
-		return ctx.json({ error: "Unauthorized" }, 401);
+		return ctx.json({ error: 'Unauthorized' }, 401);
 	}
 
 	await next();
