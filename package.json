@@ -26,7 +26,7 @@
 		"@stylistic/eslint-plugin": "^1.6.2",
 		"@types/node": "^20.11.19",
 		"cross-env": "^7.0.3",
-		"esbuild": "^0.20.0",
+		"esbuild": "^0.20.1",
 		"eslint": "^8.56.0",
 		"eslint-plugin-unicorn": "^51.0.1",
 		"execa": "^8.0.1",
