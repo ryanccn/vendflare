@@ -20,8 +20,8 @@ devDependencies:
     specifier: ^4.20240405.0
     version: 4.20240405.0
   '@eslint/js':
-    specifier: ^8.56.0
-    version: 8.56.0
+    specifier: ^8.57.0
+    version: 8.57.0
   '@microsoft/eslint-formatter-sarif':
     specifier: ^3.0.0
     version: 3.0.0
@@ -33,7 +33,7 @@ devDependencies:
     version: 2.14.2
   '@ryanccn/eslint-config':
     specifier: ^0.3.0
-    version: 0.3.0(@eslint/js@8.56.0)(@stylistic/eslint-plugin@1.6.2)(eslint-plugin-unicorn@51.0.1)(eslint@8.57.0)(typescript-eslint@7.0.1)(typescript@5.3.3)
+    version: 0.3.0(@eslint/js@8.57.0)(@stylistic/eslint-plugin@1.6.2)(eslint-plugin-unicorn@51.0.1)(eslint@8.57.0)(typescript-eslint@7.0.1)(typescript@5.3.3)
   '@stylistic/eslint-plugin':
     specifier: ^1.6.2
     version: 1.6.2(eslint@8.57.0)(typescript@5.3.3)
@@ -830,11 +830,6 @@ packages:
       - supports-color
     dev: true
 
-  /@eslint/js@8.56.0:
-    resolution: {integrity: sha512-gMsVel9D7f2HLkBma9VbtzZRehRogVRfbr++f06nL2vnCGCNlzOD+/MUov/F4p8myyAHspEhVobgjpX64q5m6A==}
-    engines: {node: ^12.22.0 || ^14.17.0 || >=16.0.0}
-    dev: true
-
   /@eslint/js@8.57.0:
     resolution: {integrity: sha512-Ys+3g2TaW7gADOJzPt83SJtCDhMjndcDMFVQ/Tj9iA1BfJzFKD9mAUXT3OenpuPHbI6P/myECxRJrofUsDx/5g==}
     engines: {node: ^12.22.0 || ^14.17.0 || >=16.0.0}
@@ -1065,7 +1060,7 @@ packages:
     dev: true
     optional: true
 
-  /@ryanccn/eslint-config@0.3.0(@eslint/js@8.56.0)(@stylistic/eslint-plugin@1.6.2)(eslint-plugin-unicorn@51.0.1)(eslint@8.57.0)(typescript-eslint@7.0.1)(typescript@5.3.3):
+  /@ryanccn/eslint-config@0.3.0(@eslint/js@8.57.0)(@stylistic/eslint-plugin@1.6.2)(eslint-plugin-unicorn@51.0.1)(eslint@8.57.0)(typescript-eslint@7.0.1)(typescript@5.3.3):
     resolution: {integrity: sha512-YQ/bDYdein2YrD4RJRqL3qACfzoRoowdMpGAHdA73AQ938MjQQTHgVYO479gHXMYydYUUAMyj6pvyfe4wJ2+0Q==}
     peerDependencies:
       '@eslint/eslintrc': ^3.0.1
@@ -1107,7 +1102,7 @@ packages:
       typescript-eslint:
         optional: true
     dependencies:
-      '@eslint/js': 8.56.0
+      '@eslint/js': 8.57.0
       '@stylistic/eslint-plugin': 1.6.2(eslint@8.57.0)(typescript@5.3.3)
       '@typescript-eslint/utils': 7.0.1(eslint@8.57.0)(typescript@5.3.3)
       eslint: 8.57.0
