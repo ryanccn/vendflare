@@ -14,7 +14,7 @@
 	"dependencies": {
 		"fflate": "^0.8.2",
 		"hono": "^4.4.7",
-		"uint8array-extras": "^1.1.0"
+		"uint8array-extras": "^1.4.0"
 	},
 	"devDependencies": {
 		"@cloudflare/workers-types": "^4.20240620.0",
