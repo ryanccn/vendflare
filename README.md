@@ -49,14 +49,14 @@ By default, the deployed Cloudflare worker uses the `dist/worker.js` build, whic
 
 One recommended optimization is to use the build that only supports the storage backend that you are actually using.
 
-| Build                    | KV  | Durable Objects | Hono preset | Size   |
-| ------------------------ | --- | --------------- | ----------- | ------ |
-| `dist/worker.js`         | ✅  | ✅              | Default     | ~40 kB |
-| `dist/worker.kv.js`      | ✅  | ❌              | Default     | ~38 kB |
-| `dist/worker.do.js`      | ❌  | ✅              | Default     | ~39 kB |
-| `dist/worker.tiny.js`    | ✅  | ✅              | Tiny        | ~32 kB |
-| `dist/worker.kv.tiny.js` | ✅  | ❌              | Tiny        | ~30 kB |
-| `dist/worker.do.tiny.js` | ❌  | ✅              | Tiny        | ~32 kB |
+| Build                    | KV  | Durable Objects | Hono preset | Size     |
+| ------------------------ | --- | --------------- | ----------- | -------- |
+| `dist/worker.js`         | ✅  | ✅              | Default     | ~41.3 kB |
+| `dist/worker.kv.js`      | ✅  | ❌              | Default     | ~40.7 kB |
+| `dist/worker.do.js`      | ❌  | ✅              | Default     | ~41.3 kB |
+| `dist/worker.tiny.js`    | ✅  | ✅              | Tiny        | ~33.4 kB |
+| `dist/worker.kv.tiny.js` | ✅  | ❌              | Tiny        | ~32.8 kB |
+| `dist/worker.do.tiny.js` | ❌  | ✅              | Tiny        | ~33.4 kB |
 
 You can change what build you use by going to `wrangler.toml` and editing the `main` field to the path of the build that you want to use.
 
