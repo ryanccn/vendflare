@@ -23,7 +23,7 @@
 		"@miniflare/kv": "^2.14.2",
 		"@miniflare/storage-memory": "^2.14.2",
 		"@ryanccn/eslint-config": "^0.3.3",
-		"@stylistic/eslint-plugin": "^2.3.0",
+		"@stylistic/eslint-plugin": "^2.4.0",
 		"@types/node": "^20.14.12",
 		"cross-env": "^7.0.3",
 		"esbuild": "^0.23.0",
