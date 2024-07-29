@@ -22,8 +22,8 @@ importers:
         specifier: ^4.20240722.0
         version: 4.20240722.0
       '@eslint/js':
-        specifier: ^9.7.0
-        version: 9.7.0
+        specifier: ^9.8.0
+        version: 9.8.0
       '@microsoft/eslint-formatter-sarif':
         specifier: ^3.1.0
         version: 3.1.0
@@ -35,7 +35,7 @@ importers:
         version: 2.14.2
       '@ryanccn/eslint-config':
         specifier: ^0.3.3
-        version: 0.3.3(@eslint/eslintrc@3.1.0)(@eslint/js@9.7.0)(@stylistic/eslint-plugin@2.3.0(eslint@9.7.0)(typescript@5.5.4))(eslint-plugin-unicorn@54.0.0(eslint@9.7.0))(eslint@9.7.0)(typescript-eslint@7.17.0(eslint@9.7.0)(typescript@5.5.4))(typescript@5.5.4)
+        version: 0.3.3(@eslint/eslintrc@3.1.0)(@eslint/js@9.8.0)(@stylistic/eslint-plugin@2.3.0(eslint@9.7.0)(typescript@5.5.4))(eslint-plugin-unicorn@54.0.0(eslint@9.7.0))(eslint@9.7.0)(typescript-eslint@7.17.0(eslint@9.7.0)(typescript@5.5.4))(typescript@5.5.4)
       '@stylistic/eslint-plugin':
         specifier: ^2.3.0
         version: 2.3.0(eslint@9.7.0)(typescript@5.5.4)
@@ -594,6 +594,10 @@ packages:
 
   '@eslint/js@9.7.0':
     resolution: {integrity: sha512-ChuWDQenef8OSFnvuxv0TCVxEwmu3+hPNKvM9B34qpM0rDRbjL8t5QkQeHHeAfsKQjuH9wS82WeCi1J/owatng==}
+    engines: {node: ^18.18.0 || ^20.9.0 || >=21.1.0}
+
+  '@eslint/js@9.8.0':
+    resolution: {integrity: sha512-MfluB7EUfxXtv3i/++oh89uzAr4PDI4nn201hsp+qaXqsjAWzinlZEHEfPgAX4doIlKvPG/i0A9dpKxOLII8yA==}
     engines: {node: ^18.18.0 || ^20.9.0 || >=21.1.0}
 
   '@eslint/object-schema@2.1.4':
@@ -2493,6 +2497,8 @@ snapshots:
 
   '@eslint/js@9.7.0': {}
 
+  '@eslint/js@9.8.0': {}
+
   '@eslint/object-schema@2.1.4': {}
 
   '@fastify/busboy@2.1.1': {}
@@ -2617,7 +2623,7 @@ snapshots:
   '@rollup/rollup-win32-x64-msvc@4.19.0':
     optional: true
 
-  '@ryanccn/eslint-config@0.3.3(@eslint/eslintrc@3.1.0)(@eslint/js@9.7.0)(@stylistic/eslint-plugin@2.3.0(eslint@9.7.0)(typescript@5.5.4))(eslint-plugin-unicorn@54.0.0(eslint@9.7.0))(eslint@9.7.0)(typescript-eslint@7.17.0(eslint@9.7.0)(typescript@5.5.4))(typescript@5.5.4)':
+  '@ryanccn/eslint-config@0.3.3(@eslint/eslintrc@3.1.0)(@eslint/js@9.8.0)(@stylistic/eslint-plugin@2.3.0(eslint@9.7.0)(typescript@5.5.4))(eslint-plugin-unicorn@54.0.0(eslint@9.7.0))(eslint@9.7.0)(typescript-eslint@7.17.0(eslint@9.7.0)(typescript@5.5.4))(typescript@5.5.4)':
     dependencies:
       '@typescript-eslint/utils': 7.17.0(eslint@9.7.0)(typescript@5.5.4)
       eslint: 9.7.0
@@ -2627,7 +2633,7 @@ snapshots:
       local-pkg: 0.5.0
     optionalDependencies:
       '@eslint/eslintrc': 3.1.0
-      '@eslint/js': 9.7.0
+      '@eslint/js': 9.8.0
       '@stylistic/eslint-plugin': 2.3.0(eslint@9.7.0)(typescript@5.5.4)
       eslint-plugin-unicorn: 54.0.0(eslint@9.7.0)
       typescript-eslint: 7.17.0(eslint@9.7.0)(typescript@5.5.4)
