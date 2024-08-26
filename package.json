@@ -18,7 +18,7 @@
 	},
 	"devDependencies": {
 		"@cloudflare/workers-types": "^4.20240722.0",
-		"@eslint/js": "^9.7.0",
+		"@eslint/js": "^9.9.1",
 		"@microsoft/eslint-formatter-sarif": "^3.1.0",
 		"@miniflare/kv": "^2.14.2",
 		"@miniflare/storage-memory": "^2.14.2",
