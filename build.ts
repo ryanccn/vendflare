@@ -1,9 +1,7 @@
-/* eslint-env node */
-
-import { BuildOptions, build } from 'esbuild';
+import { build, type BuildOptions } from 'esbuild';
 
 import { bold, dim, cyan, green, magenta } from 'kleur/colors';
-import { execa } from 'execa';
+import { x } from 'tinyexec';
 
 import { readFile, readdir, rm, writeFile } from 'node:fs/promises';
 import { join } from 'node:path';
@@ -47,7 +45,7 @@ const commonOptions = {
 	minify: true,
 } satisfies BuildOptions;
 
-const revision = await execa('git', ['rev-parse', '--short', 'HEAD']).then((p) => p.stdout);
+const revision = await x('git', ['rev-parse', '--short', 'HEAD']).then((p) => p.stdout.trim());
 
 const commonDefines = {
 	VENDFLARE_REVISION: JSON.stringify(revision),
@@ -62,14 +60,15 @@ const tinyAlias = Object.fromEntries([
 
 console.log(bold(`vendflare@${revision}`));
 
-const columnWidth = 30;
+const columnWidth = [20, 25];
+
 const logBuild = async (name: string, file: string, color: (arg0: string) => string) => {
 	name = `${name} build`;
 
 	const sizeString = await size(join('dist', file));
 
-	const firstPad = columnWidth - name.length;
-	const secondPad = columnWidth - (file.length + 5);
+	const firstPad = columnWidth[0] - name.length;
+	const secondPad = columnWidth[1] - (file.length + 5);
 
 	console.log(
 		color(name) + ' '.repeat(firstPad + 2) + dim('dist/') + file + ' '.repeat(secondPad + 2) + color(sizeString),
