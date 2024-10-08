@@ -15,11 +15,11 @@ export class UserDataStore {
 		this.bindings = bindings;
 		this.userId = userId;
 
-		if (bindings.USER_DATA) {
+		if (this.bindings.STORAGE_BACKEND !== 'kv' && bindings.USER_DATA) {
 			this.do = this.bindings.USER_DATA;
 		}
 
-		if (bindings.KV) {
+		if (this.bindings.STORAGE_BACKEND !== 'do' && bindings.KV) {
 			this.kv = this.bindings.KV;
 		}
 

@@ -1,29 +1,21 @@
 {
 	"compilerOptions": {
-		"module": "esnext",
-		"target": "esnext",
-		"moduleResolution": "bundler",
-		"resolveJsonModule": true,
-
-		"allowJs": true,
-		"checkJs": false,
-		"noEmit": true,
-		"incremental": true,
-
-		"isolatedModules": true,
-		"allowSyntheticDefaultImports": true,
 		"esModuleInterop": true,
-		"forceConsistentCasingInFileNames": true,
-		"moduleDetection": "force",
-
-		"types": ["@cloudflare/workers-types"],
 		"skipLibCheck": true,
-
+		"target": "es2022",
+		"allowJs": true,
+		"resolveJsonModule": true,
+		"moduleDetection": "force",
+		"isolatedModules": true,
+		"verbatimModuleSyntax": true,
 		"strict": true,
-		"strictNullChecks": true,
-		"useUnknownInCatchVariables": true,
-		"allowUnusedLabels": true,
-
+		"noUncheckedIndexedAccess": true,
+		"noImplicitOverride": true,
+		"module": "preserve",
+		"lib": ["es2022"],
+		"types": ["@cloudflare/workers-types"],
+		"incremental": true,
+		"noEmit": true,
 		"paths": {
 			"~/*": ["./src/*"],
 			"@src/*": ["./src/*"],

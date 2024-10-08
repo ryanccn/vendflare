@@ -5,6 +5,7 @@ compatibility_date = "2024-09-02"
 workers_dev = false
 send_metrics = false
 keep_vars = true
+no_bundle = true
 
 [build]
 command = "tsx build.ts"

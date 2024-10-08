@@ -1,9 +1,9 @@
-import { build, type BuildOptions } from 'esbuild';
+import { build } from 'esbuild';
 
-import { bold, dim, cyan, green, magenta } from 'kleur/colors';
+import { bold } from 'kleur/colors';
 import { x } from 'tinyexec';
 
-import { readFile, readdir, rm, writeFile } from 'node:fs/promises';
+import { readdir, rm, writeFile } from 'node:fs/promises';
 import { join } from 'node:path';
 
 try {
@@ -16,94 +16,28 @@ try {
 	}
 }
 
-const size = async (f: string) => {
-	const data = await readFile(f);
+const revision = await x('git', ['rev-parse', '--short', 'HEAD']).then((p) => p.stdout.trim());
 
-	let bytes = data.byteLength;
-	const thresh = 1000;
+console.log(bold(`vendflare@${revision}`));
 
-	if (Math.abs(bytes) < thresh) {
-		return bytes + ' B';
-	}
-
-	const units = ['kB', 'MB', 'GB', 'TB', 'PB', 'EB', 'ZB', 'YB'];
-	let u = -1;
-	const r = 10;
-
-	do {
-		bytes /= thresh;
-		++u;
-	} while (Math.round(Math.abs(bytes) * r) / r >= thresh && u < units.length - 1);
-
-	return bytes.toFixed(1) + ' ' + units[u];
-};
-
-const commonOptions = {
+await build({
+	entryPoints: ['src/worker.ts'],
+	outfile: 'dist/worker.js',
 	format: 'esm',
 	platform: 'neutral',
 	bundle: true,
 	minify: true,
-} satisfies BuildOptions;
+	define: {
+		VENDFLARE_REVISION: JSON.stringify(revision),
+	},
+	logLevel: 'info',
+});
 
-const revision = await x('git', ['rev-parse', '--short', 'HEAD']).then((p) => p.stdout.trim());
-
-const commonDefines = {
-	VENDFLARE_REVISION: JSON.stringify(revision),
-} as const;
-
-const honoModules = ['cors', 'timing', 'secure-headers'];
-
-const tinyAlias = Object.fromEntries([
-	...honoModules.map((mod) => [`hono/${mod}`, `hono/${mod}`]),
-	['hono', 'hono/tiny'],
-]) as Record<string, string>;
-
-console.log(bold(`vendflare@${revision}`));
-
-const columnWidth = [20, 25];
-
-const logBuild = async (name: string, file: string, color: (arg0: string) => string) => {
-	name = `${name} build`;
-
-	const sizeString = await size(join('dist', file));
-
-	const firstPad = columnWidth[0] - name.length;
-	const secondPad = columnWidth[1] - (file.length + 5);
-
-	console.log(
-		color(name) + ' '.repeat(firstPad + 2) + dim('dist/') + file + ' '.repeat(secondPad + 2) + color(sizeString),
-	);
-};
-
-const workerDeclaration = `
+await writeFile(
+	'dist/worker.d.ts',
+	`
 import worker from '../src/worker';
 export default worker;
-`.trimStart();
-
-const durableDeclaration = `
 export { UserData } from '../src/worker';
-`.trimStart();
-
-for (const preset of ['default', 'tiny'] as const) {
-	for (const backend of ['all', 'kv', 'do'] as const) {
-		const outfile = `worker${backend === 'all' ? '' : `.${backend}`}${preset === 'tiny' ? '.tiny' : ''}.js`;
-
-		await build({
-			...commonOptions,
-			entryPoints: backend === 'kv' ? ['src/worker.kv.ts'] : ['src/worker.ts'],
-			outfile: join('dist', outfile),
-			define: {
-				...commonDefines,
-			},
-			dropLabels: backend === 'kv' ? ['durable'] : backend === 'do' ? ['kv'] : [],
-			alias: preset === 'tiny' ? tinyAlias : undefined,
-		});
-
-		await writeFile(
-			join('dist', outfile.replace(/\.js$/, '.d.ts')),
-			workerDeclaration + (backend === 'kv' ? '' : durableDeclaration),
-		);
-
-		await logBuild(`${preset} ${backend}`, outfile, backend === 'all' ? cyan : backend === 'do' ? green : magenta);
-	}
-}
+`.trimStart(),
+);

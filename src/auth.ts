@@ -31,15 +31,13 @@ export const auth: () => VendflareMiddleware = () => async (ctx, next) => {
 		return;
 	}
 
-	const tokenSplit = token.split(':');
+	const [secret, userId, ...rest] = token.split(':');
 
-	if (tokenSplit.length !== 2) {
+	if (secret === undefined || userId === undefined || rest.length > 0) {
 		endTime(ctx, 'auth');
 		await next();
 		return;
 	}
-
-	const [secret, userId] = tokenSplit;
 
 	if (ctx.env.ALLOWED_USERS && !ctx.env.ALLOWED_USERS.split(',').includes(userId)) {
 		endTime(ctx, 'auth');

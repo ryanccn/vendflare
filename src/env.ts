@@ -13,8 +13,6 @@ export type Bindings = {
 
 	SIZE_LIMIT?: string;
 	ALLOWED_USERS?: string;
-
-	ANALYTICS_ENABLED?: string;
 };
 
 export type Variables = {

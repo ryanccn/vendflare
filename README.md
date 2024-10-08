@@ -43,23 +43,6 @@ When using Durable Objects, also use `wrangler.toml` to bind `USER_DATA` to the 
 
 Vendflare will automatically pick up whichever is defined (Durable Objects > KV) and use it for storage. If you specify a `STORAGE_BACKEND` variable of either `"do"`, `"kv"`, it will only try to use that backend.
 
-## Builds
-
-By default, the deployed Cloudflare worker uses the `dist/worker.js` build, which supports KV and Durable Objects. It also uses the default [Hono preset](https://hono.dev/api/presets), which includes a more performant but larger bundle size router (recommended). The tiny preset includes a much smaller but less performant router.
-
-One recommended optimization is to use the build that only supports the storage backend that you are actually using.
-
-| Build                    | KV  | Durable Objects | Hono preset | Size     |
-| ------------------------ | --- | --------------- | ----------- | -------- |
-| `dist/worker.js`         | ✅  | ✅              | Default     | ~41.3 kB |
-| `dist/worker.kv.js`      | ✅  | ❌              | Default     | ~40.7 kB |
-| `dist/worker.do.js`      | ❌  | ✅              | Default     | ~41.3 kB |
-| `dist/worker.tiny.js`    | ✅  | ✅              | Tiny        | ~33.4 kB |
-| `dist/worker.kv.tiny.js` | ✅  | ❌              | Tiny        | ~32.8 kB |
-| `dist/worker.do.tiny.js` | ❌  | ✅              | Tiny        | ~33.4 kB |
-
-You can change what build you use by going to `wrangler.toml` and editing the `main` field to the path of the build that you want to use.
-
 ## Testing
 
 Tests are powered by [Vitest](https://vitest.dev/). Tests utilize an in-memory temporary KV store that emulates Cloudflare Workers' actual runtime KV binding.

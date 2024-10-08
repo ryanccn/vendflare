@@ -9,7 +9,6 @@ import { UserDataStore } from './store';
 import { inflateSync as inflate, deflateSync as deflate } from 'fflate';
 
 import { uint8ArrayToHex } from 'uint8array-extras';
-import { analytics } from './analytics';
 import { poweredBy } from './utils/poweredBy';
 
 import type { Env } from './env';
@@ -29,7 +28,6 @@ app.use('*', poweredBy());
 app.use('*', secureHeaders());
 app.use('*', timing());
 
-app.use('*', analytics());
 app.use('*', auth());
 
 app.get('/', (c) => c.redirect(c.env.ROOT_REDIRECT || 'https://github.com/ryanccn/vendflare', 302));
