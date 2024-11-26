@@ -1,32 +1,38 @@
-import { expect, test } from 'vitest';
+import { expect } from 'vitest';
+import { vfTest, makeUrl } from './utils';
 
-import worker from '@dist/worker';
-
-import { getTestingKV, makeUrl } from './utils';
-
-test('correct secret results in success', async () => {
-	const KV = await getTestingKV({ initializeUser: true });
-
+vfTest('correct secret results in success', async ({ worker, kv }) => {
 	const res = await worker.fetch(
 		new Request(makeUrl('/v1/'), {
 			method: 'DELETE',
-			headers: { Authorization: btoa('bleh:TESTING_USER') },
+			headers: { Authorization: btoa('testing_secret:TESTING_USER') },
 		}),
-		{ KV },
+		{ KV: kv },
 	);
 
 	expect(res.ok).toEqual(true);
 });
 
-test('incorrect secret results in success', async () => {
-	const KV = await getTestingKV({ initializeUser: true });
-
+vfTest('incorrect secret results in failure: DELETE /v1', async ({ worker, kv }) => {
 	const res = await worker.fetch(
 		new Request(makeUrl('/v1/'), {
 			method: 'DELETE',
-			headers: { Authorization: btoa('not_bleh:TESTING_USER') },
+			headers: { Authorization: btoa('not_testing_secret:TESTING_USER') },
 		}),
-		{ KV },
+		{ KV: kv },
+	);
+
+	expect(res.ok).toEqual(false);
+	expect(res.status).toEqual(401);
+});
+
+vfTest('incorrect secret results in failure: PUT /v1/settings', async ({ worker, kv }) => {
+	const res = await worker.fetch(
+		new Request(makeUrl('/v1/settings'), {
+			method: 'PUT',
+			headers: { Authorization: btoa('not_testing_secret:TESTING_USER') },
+		}),
+		{ KV: kv },
 	);
 
 	expect(res.ok).toEqual(false);

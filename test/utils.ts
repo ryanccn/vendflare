@@ -1,15 +1,24 @@
+import worker from '@dist/worker';
+
+import { test } from 'vitest';
 import { KVNamespace } from '@miniflare/kv';
 import { MemoryStorage } from '@miniflare/storage-memory';
 
 export const makeUrl = (p: string) => new URL(p, 'https://vendflare.ryanccn.dev/').toString();
 
-export const getTestingKV = async (opts?: { initializeUser?: boolean }) => {
-	const storage = new MemoryStorage();
-	const kv = new KVNamespace(storage);
+export const vfTest = test.extend<{
+	worker: typeof worker;
+	kv: KVNamespace;
+}>({
+	worker,
 
-	if (opts?.initializeUser === true) {
-		await kv.put('TESTING_USER:secret', 'bleh');
-	}
+	// eslint-disable-next-line no-empty-pattern
+	kv: async ({}, use) => {
+		const storage = new MemoryStorage();
+		const kv = new KVNamespace(storage);
 
-	return kv;
-};
+		await kv.put('TESTING_USER:secret', 'testing_secret');
+
+		await use(kv);
+	},
+});

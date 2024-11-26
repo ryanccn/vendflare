@@ -24,15 +24,15 @@ app.use(
 	}),
 );
 
-app.use('*', poweredBy());
-app.use('*', secureHeaders());
-app.use('*', timing());
+app.use(poweredBy);
+app.use(secureHeaders());
+app.use(timing());
 
-app.use('*', auth());
+app.use(auth);
 
 app.get('/', (c) => c.redirect(c.env.ROOT_REDIRECT || 'https://github.com/ryanccn/vendflare', 302));
 
-app.use('/v1/settings', requireAuth());
+app.use('/v1/settings', requireAuth);
 
 app.get('/v1/settings', async (ctx) => {
 	const store = ctx.get('store')!;
@@ -55,9 +55,7 @@ app.get('/v1/settings', async (ctx) => {
 
 	startTime(ctx, 'compressData');
 	const settingsData = new TextEncoder().encode(settings);
-	const compressedSettings = deflate(
-		new Uint8Array(settingsData instanceof ArrayBuffer ? settingsData : settingsData.buffer),
-	);
+	const compressedSettings = deflate(settingsData);
 	endTime(ctx, 'compressData');
 
 	return ctx.body(compressedSettings);
@@ -109,7 +107,7 @@ app.delete('/v1/settings', async (ctx) => {
 
 app.get('/v1', (c) => c.json({ ping: 'pong' }));
 
-app.delete('/v1/', requireAuth());
+app.delete('/v1/', requireAuth);
 app.delete('/v1/', async (ctx) => {
 	const store = ctx.get('store')!;
 
@@ -164,7 +162,10 @@ app.get('/v1/oauth/callback', async (ctx) => {
 
 	endTime(ctx, 'fetchUserInfo');
 
-	if (ctx.env.ALLOWED_USERS && !ctx.env.ALLOWED_USERS.split(',').includes(userId)) {
+	if (
+		ctx.env.ALLOWED_USERS
+		&& !ctx.env.ALLOWED_USERS.split(',').map((s) => s.trim()).includes(userId)
+	) {
 		return ctx.json({ error: 'Not whitelisted' }, 401);
 	}
 

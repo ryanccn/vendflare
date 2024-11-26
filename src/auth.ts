@@ -1,15 +1,11 @@
-/* eslint-disable unicorn/consistent-function-scoping */
-
-import { type MiddlewareHandler } from 'hono';
+import { createMiddleware } from 'hono/factory';
 
 import { startTime, endTime } from './utils/timing';
 import { UserDataStore } from './store';
 
 import type { Env } from './env';
 
-type VendflareMiddleware = MiddlewareHandler<Env>;
-
-export const auth: () => VendflareMiddleware = () => async (ctx, next) => {
+export const auth = createMiddleware<Env>(async (ctx, next) => {
 	startTime(ctx, 'auth');
 	ctx.set('userId', null);
 	ctx.set('store', null);
@@ -61,13 +57,13 @@ export const auth: () => VendflareMiddleware = () => async (ctx, next) => {
 
 	endTime(ctx, 'auth');
 	await next();
-};
+});
 
-export const requireAuth: () => VendflareMiddleware = () => async (ctx, next) => {
+export const requireAuth = createMiddleware<Env>(async (ctx, next) => {
 	const userId = ctx.get('userId');
 	if (userId === null) {
 		return ctx.json({ error: 'Unauthorized' }, 401);
 	}
 
 	await next();
-};
+});
