@@ -1,24 +1,12 @@
-import worker from '@dist/worker';
+import { env } from 'cloudflare:test';
 
-import { test } from 'vitest';
-import { KVNamespace } from '@miniflare/kv';
-import { MemoryStorage } from '@miniflare/storage-memory';
+export const makeUrl = (path: string) =>
+	new URL(path, 'https://test.vendflare.local/').toString();
 
-export const makeUrl = (p: string) => new URL(p, 'https://vendflare.ryanccn.dev/').toString();
+export const setupTestingUser = async () => {
+	await env.DB.prepare('INSERT INTO secrets (user_id, secret) VALUES (?, ?)')
+		.bind('TESTING_USER', 'testing_secret')
+		.run();
+};
 
-export const vfTest = test.extend<{
-	worker: typeof worker;
-	kv: KVNamespace;
-}>({
-	worker,
-
-	// eslint-disable-next-line no-empty-pattern
-	kv: async ({}, use) => {
-		const storage = new MemoryStorage();
-		const kv = new KVNamespace(storage);
-
-		await kv.put('TESTING_USER:secret', 'testing_secret');
-
-		await use(kv);
-	},
-});
+export { default as worker } from '../src/index';

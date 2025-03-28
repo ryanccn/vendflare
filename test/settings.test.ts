@@ -1,30 +1,31 @@
-import { expect } from 'vitest';
-import { vfTest, makeUrl } from './utils';
+import { it, expect } from 'vitest';
+import { env } from 'cloudflare:test';
 
+import { makeUrl, worker } from './utils';
 import { deflateSync, inflateSync } from 'fflate';
 
-vfTest('unauthorized settings access is forbidden', async ({ worker, kv }) => {
+it('unauthorized settings access is forbidden', async () => {
 	const res = await worker.fetch(
 		new Request(makeUrl('/v1/settings'), { method: 'GET' }),
-		{ KV: kv },
+		env,
 	);
 
-	expect(res.status).toEqual(401);
+	expect(res.status).toBe(401);
 });
 
-vfTest('empty settings returns 404', async ({ worker, kv }) => {
+it('empty settings returns 404', async () => {
 	const res = await worker.fetch(
 		new Request(makeUrl('/v1/settings'), {
 			method: 'GET',
 			headers: { authorization: btoa('testing_secret:TESTING_USER') },
 		}),
-		{ KV: kv },
+		env,
 	);
 
-	expect(res.status).toEqual(404);
+	expect(res.status).toBe(404);
 });
 
-vfTest('settings are saved', async ({ worker, kv }) => {
+it('settings are saved', async () => {
 	const putRes = await worker.fetch(
 		new Request(makeUrl('/v1/settings'), {
 			method: 'PUT',
@@ -34,28 +35,44 @@ vfTest('settings are saved', async ({ worker, kv }) => {
 				'authorization': btoa('testing_secret:TESTING_USER'),
 			},
 		}),
-		{ KV: kv },
+		env,
 	);
 
-	expect(putRes.ok).toEqual(true);
+	expect(putRes.ok).toBe(true);
 
 	const getRes = await worker.fetch(
 		new Request(makeUrl('/v1/settings'), {
 			method: 'GET',
 			headers: { authorization: btoa('testing_secret:TESTING_USER') },
 		}),
-		{ KV: kv },
+		env,
 	);
 
-	expect(getRes.ok).toEqual(true);
+	expect(getRes.ok).toBe(true);
 
 	// eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
 	const data = JSON.parse(new TextDecoder().decode(inflateSync(new Uint8Array(await getRes.arrayBuffer()))));
 
-	expect(data).toEqual({ test: 'data' });
+	expect(data).toStrictEqual({ test: 'data' });
 });
 
-vfTest('size limit is enforced', async ({ worker, kv }) => {
+it('empty settings are rejected', async () => {
+	const putRes = await worker.fetch(
+		new Request(makeUrl('/v1/settings'), {
+			method: 'PUT',
+			body: null,
+			headers: {
+				'content-type': 'application/octet-stream',
+				'authorization': btoa('testing_secret:TESTING_USER'),
+			},
+		}),
+		env,
+	);
+
+	expect(putRes.ok).toBe(false);
+});
+
+it('size limit is enforced', async () => {
 	const putRes = await worker.fetch(
 		new Request(makeUrl('/v1/settings'), {
 			method: 'PUT',
@@ -66,15 +83,15 @@ vfTest('size limit is enforced', async ({ worker, kv }) => {
 			},
 		}),
 		{
-			KV: kv,
+			...env,
 			SIZE_LIMIT: 1,
 		},
 	);
 
-	expect(putRes.status).toEqual(413);
+	expect(putRes.status).toBe(413);
 });
 
-vfTest('content-type is enforced', async ({ worker, kv }) => {
+it('content-type is enforced', async () => {
 	const putRes = await worker.fetch(
 		new Request(makeUrl('/v1/settings'), {
 			method: 'PUT',
@@ -84,13 +101,13 @@ vfTest('content-type is enforced', async ({ worker, kv }) => {
 				'authorization': btoa('testing_secret:TESTING_USER'),
 			},
 		}),
-		{ KV: kv },
+		env,
 	);
 
-	expect(putRes.status).toEqual(400);
+	expect(putRes.status).toBe(400);
 });
 
-vfTest('if-none-match header is observed', async ({ worker, kv }) => {
+it('if-none-match header is observed', async () => {
 	const putRes = await worker.fetch(
 		new Request(makeUrl('/v1/settings'), {
 			method: 'PUT',
@@ -100,13 +117,12 @@ vfTest('if-none-match header is observed', async ({ worker, kv }) => {
 				'authorization': btoa('testing_secret:TESTING_USER'),
 			},
 		}),
-		{ KV: kv },
+		env,
 	);
 
-	expect(putRes.ok).toEqual(true);
+	expect(putRes.ok).toBe(true);
 
-	// eslint-disable-next-line @typescript-eslint/no-unnecessary-type-assertion
-	const { written } = (await putRes.json()) as { written: number };
+	const { written } = (await putRes.json<{ written: number }>());
 
 	const getRes = await worker.fetch(
 		new Request(makeUrl('/v1/settings'), {
@@ -116,10 +132,10 @@ vfTest('if-none-match header is observed', async ({ worker, kv }) => {
 				'if-none-match': `${written}`,
 			},
 		}),
-		{ KV: kv },
+		env,
 	);
 
-	expect(getRes.status).toEqual(304);
+	expect(getRes.status).toBe(304);
 
 	const getRes2 = await worker.fetch(
 		new Request(makeUrl('/v1/settings'), {
@@ -129,13 +145,13 @@ vfTest('if-none-match header is observed', async ({ worker, kv }) => {
 				'if-none-match': `${written + 1}`,
 			},
 		}),
-		{ KV: kv },
+		env,
 	);
 
-	expect(getRes2.status).toEqual(200);
+	expect(getRes2.status).toBe(200);
 });
 
-vfTest('settings are deleted', async ({ worker, kv }) => {
+it('settings are deleted', async () => {
 	const putRes = await worker.fetch(
 		new Request(makeUrl('/v1/settings'), {
 			method: 'PUT',
@@ -145,28 +161,28 @@ vfTest('settings are deleted', async ({ worker, kv }) => {
 				'authorization': btoa('testing_secret:TESTING_USER'),
 			},
 		}),
-		{ KV: kv },
+		env,
 	);
 
-	expect(putRes.status).toEqual(200);
+	expect(putRes.status).toBe(200);
 
 	const getRes = await worker.fetch(
 		new Request(makeUrl('/v1/settings'), {
 			method: 'DELETE',
 			headers: { authorization: btoa('testing_secret:TESTING_USER') },
 		}),
-		{ KV: kv },
+		env,
 	);
 
-	expect(getRes.status).toEqual(204);
+	expect(getRes.status).toBe(204);
 
 	const checkRes = await worker.fetch(
 		new Request(makeUrl('/v1/settings'), {
 			method: 'GET',
 			headers: { authorization: btoa('testing_secret:TESTING_USER') },
 		}),
-		{ KV: kv },
+		env,
 	);
 
-	expect(checkRes.status).toEqual(404);
+	expect(checkRes.status).toBe(404);
 });

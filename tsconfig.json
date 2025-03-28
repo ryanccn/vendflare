@@ -13,13 +13,10 @@
 		"noImplicitOverride": true,
 		"module": "preserve",
 		"lib": ["es2022"],
-		"types": ["@cloudflare/workers-types"],
-		"incremental": true,
 		"noEmit": true,
+		"types": ["@cloudflare/workers-types"],
 		"paths": {
-			"~/*": ["./src/*"],
-			"@src/*": ["./src/*"],
-			"@dist/*": ["./dist/*"]
+			"~/*": ["./src/*"]
 		}
 	},
 	"include": ["**/*.js", "**/*.ts"]

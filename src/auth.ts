@@ -1,14 +1,12 @@
 import { createMiddleware } from 'hono/factory';
 
 import { startTime, endTime } from './utils/timing';
-import { UserDataStore } from './store';
 
 import type { Env } from './env';
 
 export const auth = createMiddleware<Env>(async (ctx, next) => {
 	startTime(ctx, 'auth');
 	ctx.set('userId', null);
-	ctx.set('store', null);
 
 	const authHeader = ctx.req.header('authorization');
 	if (!authHeader) {
@@ -41,19 +39,28 @@ export const auth = createMiddleware<Env>(async (ctx, next) => {
 		return;
 	}
 
-	const store = new UserDataStore(ctx.env, userId);
-	startTime(ctx, 'getSecret');
-	const storedSecret = await store.get('secret');
-	endTime(ctx, 'getSecret');
+	startTime(ctx, 'obtainSecret');
 
-	if (!storedSecret || storedSecret !== secret) {
+	const storedSecret = await ctx.env.DB.prepare('SELECT secret FROM secrets WHERE user_id = ?')
+		.bind(userId)
+		.first<{ secret: string }>()
+		.then((row) => row?.secret);
+
+	endTime(ctx, 'obtainSecret');
+
+	const enc = new TextEncoder();
+	const [storedSecretBytes, secretBytes] = [enc.encode(storedSecret), enc.encode(secret)];
+
+	if (
+		storedSecretBytes.length !== secretBytes.length
+		|| !crypto.subtle.timingSafeEqual(storedSecretBytes, secretBytes)
+	) {
 		endTime(ctx, 'auth');
 		await next();
 		return;
 	}
 
 	ctx.set('userId', userId);
-	ctx.set('store', store);
 
 	endTime(ctx, 'auth');
 	await next();

@@ -5,37 +5,43 @@
 	"type": "module",
 	"scripts": {
 		"dev": "wrangler dev",
-		"build": "tsx build.ts",
+		"build": "node build.ts",
 		"deploy": "wrangler deploy",
-		"lint": "tsc -noEmit && eslint .",
+		"lint": "tsc --noEmit && eslint .",
 		"format": "prettier --write .",
-		"test": "vitest run"
+		"test": "vitest"
 	},
 	"dependencies": {
 		"fflate": "^0.8.2",
-		"hono": "^4.6.12",
+		"hono": "^4.7.5",
 		"uint8array-extras": "^1.4.0"
 	},
 	"devDependencies": {
-		"@cloudflare/workers-types": "^4.20241112.0",
-		"@eslint/js": "^9.15.0",
+		"@cloudflare/vitest-pool-workers": "^0.8.8",
+		"@cloudflare/workers-types": "^4.20250327.0",
+		"@eslint/js": "^9.23.0",
 		"@microsoft/eslint-formatter-sarif": "^3.1.0",
-		"@miniflare/kv": "^2.14.4",
-		"@miniflare/storage-memory": "^2.14.4",
-		"@ryanccn/eslint-config": "^0.4.2",
-		"@stylistic/eslint-plugin": "^2.11.0",
-		"@types/node": "^22.10.0",
-		"esbuild": "^0.24.0",
-		"eslint": "^9.15.0",
-		"eslint-plugin-unicorn": "^56.0.1",
+		"@ryanccn/eslint-config": "^0.4.3",
+		"@stylistic/eslint-plugin": "^4.2.0",
+		"@types/node": "^22.13.14",
+		"@vitest/coverage-istanbul": "3.0.9",
+		"esbuild": "^0.25.1",
+		"eslint": "^9.23.0",
+		"eslint-plugin-unicorn": "^58.0.0",
 		"kleur": "^4.1.5",
-		"prettier": "^3.4.0",
-		"tinyexec": "^0.3.1",
-		"tsx": "^4.19.2",
-		"typescript": "^5.7.2",
-		"typescript-eslint": "^8.16.0",
-		"vitest": "^2.1.5",
-		"wrangler": "^3.90.0"
+		"prettier": "^3.5.3",
+		"tinyexec": "^1.0.1",
+		"typescript": "^5.8.2",
+		"typescript-eslint": "^8.28.0",
+		"vitest": "^3.0.9",
+		"wrangler": "^4.6.0"
 	},
-	"packageManager": "pnpm@9.14.2+sha512.6e2baf77d06b9362294152c851c4f278ede37ab1eba3a55fda317a4a17b209f4dbb973fb250a77abc463a341fcb1f17f17cfa24091c4eb319cda0d9b84278387"
+	"pnpm": {
+		"onlyBuiltDependencies": [
+			"esbuild",
+			"sharp",
+			"workerd"
+		]
+	},
+	"packageManager": "pnpm@10.7.0+sha512.6b865ad4b62a1d9842b61d674a393903b871d9244954f652b8842c2b553c72176b278f64c463e52d40fff8aba385c235c8c9ecf5cc7de4fd78b8bb6d49633ab6"
 }

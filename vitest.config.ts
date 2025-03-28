@@ -1,15 +1,40 @@
-import { defineConfig } from 'vitest/config';
-import { fileURLToPath } from 'node:url';
-import { dirname, join } from 'node:path';
+import {
+	defineWorkersProject,
+	readD1Migrations,
+} from '@cloudflare/vitest-pool-workers/config';
+import path from 'node:path';
 
-const projectRoot = dirname(fileURLToPath(import.meta.url));
+const migrationsPath = path.join(import.meta.dirname, 'migrations');
 
-export default defineConfig({
-	test: {
-		root: './test',
-		alias: {
-			'@src': join(projectRoot, 'src'),
-			'@dist': join(projectRoot, 'dist'),
+export default defineWorkersProject(async () => {
+	const migrations = await readD1Migrations(migrationsPath);
+
+	return {
+		define: {
+			VENDFLARE_REVISION: JSON.stringify('__test'),
 		},
-	},
+
+		test: {
+			setupFiles: ['./test/setup.ts'],
+
+			coverage: {
+				provider: 'istanbul',
+				include: ['src'],
+			},
+
+			poolOptions: {
+				workers: {
+					wrangler: {
+						configPath: './wrangler.toml',
+					},
+
+					miniflare: {
+						bindings: {
+							TEST_MIGRATIONS: migrations,
+						},
+					},
+				},
+			},
+		},
+	};
 });

@@ -11,4 +11,4 @@ dist/
 .vscode/
 .idea/
 
-/test/coverage/
+coverage/

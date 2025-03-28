@@ -21,8 +21,8 @@ const revision = await x('git', ['rev-parse', '--short', 'HEAD']).then((p) => p.
 console.log(bold(`vendflare@${revision}`));
 
 await build({
-	entryPoints: ['src/worker.ts'],
-	outfile: 'dist/worker.js',
+	entryPoints: ['src/index.ts'],
+	outfile: 'dist/index.js',
 	format: 'esm',
 	platform: 'neutral',
 	bundle: true,
@@ -34,10 +34,8 @@ await build({
 });
 
 await writeFile(
-	'dist/worker.d.ts',
-	`
-import worker from '../src/worker';
+	'dist/index.d.ts',
+	`import worker from '../src/index.js';
 export default worker;
-export { UserData } from '../src/worker';
-`.trimStart(),
+`,
 );

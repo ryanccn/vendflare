@@ -12,8 +12,8 @@ const timingLabels = {
 	deleteData: 'Delete data',
 	obtainDiscordToken: 'Obtain Discord token',
 	fetchUserInfo: 'Fetch user information',
-	getSecret: 'Attempt to get secret',
-	generateSecret: 'Generate secret',
+	obtainSecret: 'Attempt to obtain secret',
+	generateSecret: 'Generate new secret',
 } as const;
 
 export const startTime = <T extends keyof typeof timingLabels>(ctx: Context, name: T) => {

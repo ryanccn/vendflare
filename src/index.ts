@@ -1,10 +1,9 @@
-import { Hono } from 'hono';
+import { Hono, type Context } from 'hono';
 import { timing } from 'hono/timing';
 import { cors } from 'hono/cors';
 import { secureHeaders } from 'hono/secure-headers';
 
 import { auth, requireAuth } from './auth';
-import { UserDataStore } from './store';
 
 import { inflateSync as inflate, deflateSync as deflate } from 'fflate';
 
@@ -35,26 +34,30 @@ app.get('/', (c) => c.redirect(c.env.ROOT_REDIRECT || 'https://github.com/ryancc
 app.use('/v1/settings', requireAuth);
 
 app.get('/v1/settings', async (ctx) => {
-	const store = ctx.get('store')!;
+	const userId = ctx.get('userId')!;
 
 	startTime(ctx, 'readSettings');
-	const [settings, written] = await Promise.all([store.get('settings:value'), store.get('settings:written')]);
+
+	const settings = await ctx.env.DB.prepare('SELECT value, written FROM settings WHERE user_id = ?')
+		.bind(userId)
+		.first<{ value: string; written: number }>();
+
 	endTime(ctx, 'readSettings');
 
-	if (!settings || !written) {
+	if (!settings) {
 		return ctx.notFound();
 	}
 
 	const ifNoneMatch = ctx.req.header('if-none-match');
-	if (ifNoneMatch && ifNoneMatch === written) {
+	if (ifNoneMatch && ifNoneMatch === settings.written.toString()) {
 		return ctx.body(null, 304);
 	}
 
 	ctx.header('content-type', 'application/octet-stream');
-	ctx.header('etag', written);
+	ctx.header('etag', `W/"${settings.written}"`);
 
 	startTime(ctx, 'compressData');
-	const settingsData = new TextEncoder().encode(settings);
+	const settingsData = new TextEncoder().encode(settings.value);
 	const compressedSettings = deflate(settingsData);
 	endTime(ctx, 'compressData');
 
@@ -62,7 +65,7 @@ app.get('/v1/settings', async (ctx) => {
 });
 
 app.put('/v1/settings', async (ctx) => {
-	const store = ctx.get('store')!;
+	const userId = ctx.get('userId')!;
 
 	if (ctx.req.header('content-type') !== 'application/octet-stream') {
 		return ctx.json({ error: 'Content type must be application/octet-stream' }, 400);
@@ -85,21 +88,29 @@ app.put('/v1/settings', async (ctx) => {
 
 	startTime(ctx, 'decompressData');
 	const decompressed = inflate(new Uint8Array(rawData));
-	const dataString = new TextDecoder().decode(decompressed);
+	const value = new TextDecoder().decode(decompressed);
 	endTime(ctx, 'decompressData');
 
 	startTime(ctx, 'writeSettings');
-	await Promise.all([store.put('settings:value', dataString), store.put('settings:written', `${now}`)]);
+
+	await ctx.env.DB.prepare('INSERT INTO settings (user_id, value, written) VALUES (?, ?, ?) ON CONFLICT (user_id) DO UPDATE SET value = excluded.value, written = excluded.written')
+		.bind(userId, value, now)
+		.run();
+
 	endTime(ctx, 'writeSettings');
 
 	return ctx.json({ written: now });
 });
 
 app.delete('/v1/settings', async (ctx) => {
-	const store = ctx.get('store')!;
+	const userId = ctx.get('userId')!;
 
 	startTime(ctx, 'deleteSettings');
-	await Promise.all([store.del('settings:value'), store.del('settings:written')]);
+
+	await ctx.env.DB.prepare('DELETE FROM settings WHERE user_id = ?')
+		.bind(userId)
+		.run();
+
 	endTime(ctx, 'deleteSettings');
 
 	return ctx.body(null, 204);
@@ -109,18 +120,25 @@ app.get('/v1', (c) => c.json({ ping: 'pong' }));
 
 app.delete('/v1/', requireAuth);
 app.delete('/v1/', async (ctx) => {
-	const store = ctx.get('store')!;
+	const userId = ctx.get('userId')!;
 
 	startTime(ctx, 'deleteData');
-	await store.delAll();
+
+	await ctx.env.DB.batch([
+		ctx.env.DB.prepare('DELETE FROM secrets WHERE user_id = ?').bind(userId),
+		ctx.env.DB.prepare('DELETE FROM settings WHERE user_id = ?').bind(userId),
+	]);
+
 	endTime(ctx, 'deleteData');
 
 	return ctx.body(null, 204);
 });
 
+const defaultRedirectUri = (ctx: Context<Env>) => new URL('/v1/oauth/callback', ctx.req.url).toString();
+
 app.get('/v1/oauth/callback', async (ctx) => {
-	const code = new URL(ctx.req.url).searchParams.get('code');
-	if (code === null) {
+	const code = ctx.req.query('code');
+	if (code === undefined) {
 		return ctx.json({ error: 'Missing code' }, 400);
 	}
 
@@ -129,7 +147,7 @@ app.get('/v1/oauth/callback', async (ctx) => {
 	formData.append('client_secret', ctx.env.DISCORD_CLIENT_SECRET);
 	formData.append('grant_type', 'authorization_code');
 	formData.append('code', code);
-	formData.append('redirect_uri', ctx.env.DISCORD_REDIRECT_URI);
+	formData.append('redirect_uri', ctx.env.DISCORD_REDIRECT_URI || defaultRedirectUri(ctx));
 	formData.append('scope', 'identify');
 
 	startTime(ctx, 'obtainDiscordToken');
@@ -169,22 +187,23 @@ app.get('/v1/oauth/callback', async (ctx) => {
 		return ctx.json({ error: 'Not whitelisted' }, 401);
 	}
 
-	const store = new UserDataStore(ctx.env, userId);
+	startTime(ctx, 'obtainSecret');
 
-	startTime(ctx, 'getSecret');
-	let secret = await store.get('secret');
-	endTime(ctx, 'getSecret');
+	let secret = await ctx.env.DB.prepare('SELECT secret FROM secrets WHERE user_id = ?')
+		.bind(userId)
+		.first<{ secret: string }>()
+		.then((row) => row?.secret);
+
+	endTime(ctx, 'obtainSecret');
 
 	if (!secret) {
-		startTime(ctx, 'generateSecret');
-
 		const randValues = new Uint8Array(64);
 		crypto.getRandomValues(randValues);
-
 		secret = uint8ArrayToHex(randValues);
-		await store.put('secret', secret);
 
-		endTime(ctx, 'generateSecret');
+		await ctx.env.DB.prepare('INSERT INTO secrets (user_id, secret) VALUES (?, ?)')
+			.bind(userId, secret)
+			.run();
 	}
 
 	return ctx.json({ secret });
@@ -193,9 +212,8 @@ app.get('/v1/oauth/callback', async (ctx) => {
 app.get('/v1/oauth/settings', (ctx) => {
 	return ctx.json({
 		clientId: ctx.env.DISCORD_CLIENT_ID,
-		redirectUri: ctx.env.DISCORD_REDIRECT_URI,
+		redirectUri: ctx.env.DISCORD_REDIRECT_URI || defaultRedirectUri(ctx),
 	});
 });
 
 export default app;
-export { UserData } from './store/do';

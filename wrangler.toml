@@ -1,6 +1,6 @@
 name = "vendflare"
-main = "dist/worker.js"
-compatibility_date = "2024-09-02"
+main = "dist/index.js"
+compatibility_date = "2025-03-19"
 
 workers_dev = false
 send_metrics = false
@@ -8,15 +8,12 @@ keep_vars = true
 no_bundle = true
 
 [build]
-command = "tsx build.ts"
+command = "node build.ts"
 
-[[kv_namespaces]]
-binding = "KV"
-id = "b6aa428038974b3b825ef772b01a33b1"
-
-# [[durable_objects.bindings]]
-# name = "USER_DATA"
-# class_name = "UserData"
+[[d1_databases]]
+binding = "DB"
+database_name = "vendflare"
+database_id = "e30acede-0d23-4e95-8cb1-9d570099d3ac"
 
 [observability]
 enabled = true
