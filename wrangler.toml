@@ -3,9 +3,11 @@ main = "dist/index.js"
 compatibility_date = "2025-03-19"
 
 workers_dev = false
+preview_urls = false
 send_metrics = false
-keep_vars = true
+
 no_bundle = true
+keep_vars = true
 
 [build]
 command = "node build.ts"
@@ -17,3 +19,6 @@ database_id = "e30acede-0d23-4e95-8cb1-9d570099d3ac"
 
 [observability]
 enabled = true
+
+[placement]
+mode = "smart"

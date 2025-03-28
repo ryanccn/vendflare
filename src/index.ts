@@ -54,7 +54,7 @@ app.get('/v1/settings', async (ctx) => {
 	}
 
 	ctx.header('content-type', 'application/octet-stream');
-	ctx.header('etag', `W/"${settings.written}"`);
+	ctx.header('etag', settings.written.toString());
 
 	startTime(ctx, 'compressData');
 	const settingsData = new TextEncoder().encode(settings.value);
