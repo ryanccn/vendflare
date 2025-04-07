@@ -31,7 +31,7 @@
 		"kleur": "^4.1.5",
 		"prettier": "^3.5.3",
 		"tinyexec": "^1.0.1",
-		"typescript": "^5.8.2",
+		"typescript": "^5.8.3",
 		"typescript-eslint": "^8.28.0",
 		"vitest": "^3.0.9",
 		"wrangler": "^4.6.0"
