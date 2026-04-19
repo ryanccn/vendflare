@@ -1,7 +1,9 @@
 import type { Bindings } from '~/env';
 
-declare module 'cloudflare:test' {
-	interface ProvidedEnv extends Bindings {
-		TEST_MIGRATIONS: D1Migration[];
+declare global {
+	namespace Cloudflare {
+		interface Env extends Bindings {
+			TEST_MIGRATIONS: import('cloudflare:test').D1Migration[];
+		}
 	}
 }

@@ -1,4 +1,4 @@
-import { env } from 'cloudflare:test';
+import { env } from 'cloudflare:workers';
 
 export const makeUrl = (path: string) =>
 	new URL(path, 'https://test.vendflare.local/').toString();

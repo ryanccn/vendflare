@@ -61,7 +61,7 @@ app.get('/v1/settings', async (ctx) => {
 	const compressedSettings = deflate(settingsData);
 	endTime(ctx, 'compressData');
 
-	return ctx.body(compressedSettings);
+	return ctx.body(compressedSettings as Uint8Array<ArrayBuffer>);
 });
 
 app.put('/v1/settings', async (ctx) => {

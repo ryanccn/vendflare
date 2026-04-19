@@ -1,5 +1,5 @@
 import { it, expect } from 'vitest';
-import { env } from 'cloudflare:test';
+import { env } from 'cloudflare:workers';
 
 import { makeUrl, worker } from './utils';
 import { deflateSync, inflateSync } from 'fflate';

@@ -1,5 +1,5 @@
 import { expect, it } from 'vitest';
-import { env } from 'cloudflare:test';
+import { env } from 'cloudflare:workers';
 import { makeUrl, worker } from './utils';
 
 it('returns default redirect', async () => {

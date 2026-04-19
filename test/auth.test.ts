@@ -1,17 +1,16 @@
-import { afterEach, beforeAll, describe, expect, it } from 'vitest';
-import { env } from 'cloudflare:test';
+import { afterEach, beforeAll, afterAll, describe, expect, it } from 'vitest';
+import { env } from 'cloudflare:workers';
+
+import { setupServer } from 'msw/node';
+import { http, HttpResponse } from 'msw';
 
 import { makeUrl, worker } from './utils';
-import { fetchMock } from 'cloudflare:test';
 
-beforeAll(() => {
-	fetchMock.activate();
-	fetchMock.disableNetConnect();
-});
+const server = setupServer();
 
-afterEach(() => {
-	fetchMock.assertNoPendingInterceptors();
-});
+beforeAll(() => server.listen({ onUnhandledRequest: 'error' }));
+afterAll(() => server.close());
+afterEach(() => server.resetHandlers());
 
 it('correct secret results in success', async () => {
 	const res = await worker.fetch(
@@ -82,20 +81,12 @@ it('disallowed user secret results in failure', async () => {
 
 describe('Discord authorization flow', () => {
 	it('succeeds with existing user', async () => {
-		fetchMock
-			.get('https://discord.com')
-			.intercept({ path: '/api/oauth2/token', method: 'POST' })
-			.reply(200, JSON.stringify({ access_token: 'abcde' }));
-
-		fetchMock
-			.get('https://discord.com')
-			.intercept({ path: '/api/users/@me', headers: { authorization: 'Bearer abcde' } })
-			.reply(200, JSON.stringify({ id: 'TESTING_USER' }));
-
-		const res = await worker.fetch(
-			new Request(makeUrl('/v1/oauth/callback?code=__test_code')),
-			env,
+		server.use(
+			http.post('https://discord.com/api/oauth2/token', () => HttpResponse.json({ access_token: 'abcde' })),
+			http.get('https://discord.com/api/users/@me', () => HttpResponse.json({ id: 'TESTING_USER' })),
 		);
+
+		const res = await worker.fetch(new Request(makeUrl('/v1/oauth/callback?code=__test_code')), env);
 
 		const { secret } = await res.json<{ secret: string }>();
 
@@ -114,23 +105,15 @@ describe('Discord authorization flow', () => {
 	});
 
 	it('succeeds with new user', async () => {
-		fetchMock
-			.get('https://discord.com')
-			.intercept({ path: '/api/oauth2/token', method: 'POST' })
-			.reply(200, JSON.stringify({ access_token: 'abcde' }));
-
-		fetchMock
-			.get('https://discord.com')
-			.intercept({ path: '/api/users/@me', headers: { authorization: 'Bearer abcde' } })
-			.reply(200, JSON.stringify({ id: 'TESTING_USER_2' }));
-
-		const res = await worker.fetch(
-			new Request(makeUrl('/v1/oauth/callback?code=__test_code')),
-			{
-				...env,
-				ALLOWED_USERS: 'TESTING_USER,TESTING_USER_2',
-			},
+		server.use(
+			http.post('https://discord.com/api/oauth2/token', () => HttpResponse.json({ access_token: 'abcde' })),
+			http.get('https://discord.com/api/users/@me', () => HttpResponse.json({ id: 'TESTING_USER_2' })),
 		);
+
+		const res = await worker.fetch(new Request(makeUrl('/v1/oauth/callback?code=__test_code')), {
+			...env,
+			ALLOWED_USERS: 'TESTING_USER,TESTING_USER_2',
+		});
 
 		const { secret } = await res.json<{ secret: string }>();
 
@@ -149,68 +132,43 @@ describe('Discord authorization flow', () => {
 	});
 
 	it('fails without code', async () => {
-		const res = await worker.fetch(
-			new Request(makeUrl('/v1/oauth/callback')),
-			env,
-		);
+		const res = await worker.fetch(new Request(makeUrl('/v1/oauth/callback')), env);
 
 		expect(res.ok).toBe(false);
 		expect(res.status).toBe(400);
 	});
 
 	it('fails if not allowlisted', async () => {
-		fetchMock
-			.get('https://discord.com')
-			.intercept({ path: '/api/oauth2/token', method: 'POST' })
-			.reply(200, JSON.stringify({ access_token: 'abcde' }));
-
-		fetchMock
-			.get('https://discord.com')
-			.intercept({ path: '/api/users/@me', headers: { authorization: 'Bearer abcde' } })
-			.reply(200, JSON.stringify({ id: 'TESTING_USER_2' }));
-
-		const res = await worker.fetch(
-			new Request(makeUrl('/v1/oauth/callback?code=__test_code')),
-			{
-				...env,
-				ALLOWED_USERS: 'TESTING_USER',
-			},
+		server.use(
+			http.post('https://discord.com/api/oauth2/token', () => HttpResponse.json({ access_token: 'abcde' })),
+			http.get('https://discord.com/api/users/@me', () => HttpResponse.json({ id: 'TESTING_USER_2' })),
 		);
+
+		const res = await worker.fetch(new Request(makeUrl('/v1/oauth/callback?code=__test_code')), {
+			...env,
+			ALLOWED_USERS: 'TESTING_USER',
+		});
 
 		expect(res.ok).toBe(false);
 		expect(res.status).toBe(401);
 	});
 
 	it('fails if /api/oauth2/token fails', async () => {
-		fetchMock
-			.get('https://discord.com')
-			.intercept({ path: '/api/oauth2/token', method: 'POST' })
-			.reply(500);
+		server.use(http.post('https://discord.com/api/oauth2/token', () => new HttpResponse(null, { status: 500 })));
 
-		const res = await worker.fetch(
-			new Request(makeUrl('/v1/oauth/callback?code=__test_code')),
-			env,
-		);
+		const res = await worker.fetch(new Request(makeUrl('/v1/oauth/callback?code=__test_code')), env);
 
 		expect(res.ok).toBe(false);
 		expect(res.status).toBe(401);
 	});
 
 	it('fails if /api/users/@me fails', async () => {
-		fetchMock
-			.get('https://discord.com')
-			.intercept({ path: '/api/oauth2/token', method: 'POST' })
-			.reply(200, JSON.stringify({ access_token: 'abcde' }));
-
-		fetchMock
-			.get('https://discord.com')
-			.intercept({ path: '/api/users/@me', headers: { authorization: 'Bearer abcde' } })
-			.reply(500);
-
-		const res = await worker.fetch(
-			new Request(makeUrl('/v1/oauth/callback?code=__test_code')),
-			env,
+		server.use(
+			http.post('https://discord.com/api/oauth2/token', () => HttpResponse.json({ access_token: 'abcde' })),
+			http.get('https://discord.com/api/users/@me', () => new HttpResponse(null, { status: 500 })),
 		);
+
+		const res = await worker.fetch(new Request(makeUrl('/v1/oauth/callback?code=__test_code')), env);
 
 		expect(res.ok).toBe(false);
 		expect(res.status).toBe(500);
@@ -219,14 +177,11 @@ describe('Discord authorization flow', () => {
 
 describe('Discord OAuth settings endpoint', () => {
 	it('works', async () => {
-		const res = await worker.fetch(
-			new Request(makeUrl('/v1/oauth/settings')),
-			{
-				...env,
-				DISCORD_CLIENT_ID: '__test_client_id',
-				DISCORD_REDIRECT_URI: '__test_redirect_uri',
-			},
-		);
+		const res = await worker.fetch(new Request(makeUrl('/v1/oauth/settings')), {
+			...env,
+			DISCORD_CLIENT_ID: '__test_client_id',
+			DISCORD_REDIRECT_URI: '__test_redirect_uri',
+		});
 
 		const data = await res.json();
 
@@ -238,14 +193,11 @@ describe('Discord OAuth settings endpoint', () => {
 	});
 
 	it('works with default redirect URI', async () => {
-		const res = await worker.fetch(
-			new Request(makeUrl('/v1/oauth/settings')),
-			{
-				...env,
-				DISCORD_CLIENT_ID: '__test_client_id',
-				DISCORD_REDIRECT_URI: undefined,
-			},
-		);
+		const res = await worker.fetch(new Request(makeUrl('/v1/oauth/settings')), {
+			...env,
+			DISCORD_CLIENT_ID: '__test_client_id',
+			DISCORD_REDIRECT_URI: undefined,
+		});
 
 		const data = await res.json();
 
