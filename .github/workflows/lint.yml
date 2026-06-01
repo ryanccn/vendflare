@@ -19,7 +19,7 @@ jobs:
         uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # ratchet:actions/checkout@v6
 
       - name: Setup pnpm
-        uses: pnpm/action-setup@26f6d4f2c533a43e6b5da0b4a5dd983f98f7b49a # ratchet:pnpm/action-setup@v6.0.4
+        uses: pnpm/action-setup@0e279bb959325dab635dd2c09392533439d90093 # ratchet:pnpm/action-setup@v6.0.8
       - name: Setup Node.js
         uses: actions/setup-node@48b55a011bda9f5d6aeb4c2d9c7362e8dae4041e # ratchet:actions/setup-node@v6
         with:
@@ -41,7 +41,7 @@ jobs:
         run: pnpm dlx @ryanccn/sarif-strip-suppressed /tmp/lint.sarif
 
       - name: Upload results
-        uses: github/codeql-action/upload-sarif@95e58e9a2cdfd71adc6e0353d5c52f41a045d225 # ratchet:github/codeql-action/upload-sarif@v4.35.2
+        uses: github/codeql-action/upload-sarif@7211b7c8077ea37d8641b6271f6a365a22a5fbfa # ratchet:github/codeql-action/upload-sarif@v4.36.0
         with:
           sarif_file: /tmp/lint.sarif
           wait-for-processing: true
