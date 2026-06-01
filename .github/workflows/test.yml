@@ -18,7 +18,7 @@ jobs:
         uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # ratchet:actions/checkout@v6
 
       - name: Setup pnpm
-        uses: pnpm/action-setup@26f6d4f2c533a43e6b5da0b4a5dd983f98f7b49a # ratchet:pnpm/action-setup@v6.0.4
+        uses: pnpm/action-setup@0e279bb959325dab635dd2c09392533439d90093 # ratchet:pnpm/action-setup@v6.0.8
       - name: Setup Node.js
         uses: actions/setup-node@48b55a011bda9f5d6aeb4c2d9c7362e8dae4041e # ratchet:actions/setup-node@v6
         with:
@@ -36,6 +36,6 @@ jobs:
         run: pnpm run test --run --coverage
 
       - name: Upload coverage reports to Codecov
-        uses: codecov/codecov-action@57e3a136b779b570ffcdbf80b3bdc90e7fab3de2 # ratchet:codecov/codecov-action@v6
+        uses: codecov/codecov-action@e79a6962e0d4c0c17b229090214935d2e33f8354 # ratchet:codecov/codecov-action@v6
         with:
           token: ${{ secrets.CODECOV_TOKEN }}
