@@ -27,7 +27,7 @@
 		"@vitest/coverage-istanbul": "4.1.9",
 		"esbuild": "^0.28.1",
 		"eslint": "^10.6.0",
-		"eslint-plugin-unicorn": "^64.0.0",
+		"eslint-plugin-unicorn": "^69.0.0",
 		"kleur": "^4.1.5",
 		"msw": "^2.14.6",
 		"prettier": "^3.9.4",
