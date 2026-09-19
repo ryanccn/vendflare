@@ -61,7 +61,7 @@ app.get('/v1/settings', async (ctx) => {
 	const compressedSettings = deflate(settingsData);
 	endTime(ctx, 'compressData');
 
-	return ctx.body(compressedSettings as Uint8Array<ArrayBuffer>);
+	return ctx.body(compressedSettings);
 });
 
 app.put('/v1/settings', async (ctx) => {
@@ -134,7 +134,7 @@ app.delete('/v1/', async (ctx) => {
 	return ctx.body(null, 204);
 });
 
-const defaultRedirectUri = (ctx: Context<Env>) => new URL('/v1/oauth/callback', ctx.req.url).toString();
+const defaultRedirectUri = (ctx: Context<Env>) => new URL('/v1/oauth/callback', ctx.req.url).href;
 
 app.get('/v1/oauth/callback', async (ctx) => {
 	const code = ctx.req.query('code');

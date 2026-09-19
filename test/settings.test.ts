@@ -6,7 +6,7 @@ import { deflateSync, inflateSync } from 'fflate';
 
 it('unauthorized settings access is forbidden', async () => {
 	const res = await worker.fetch(
-		new Request(makeUrl('/v1/settings'), { method: 'GET' }),
+		new Request(makeUrl('/v1/settings')),
 		env,
 	);
 
@@ -16,7 +16,6 @@ it('unauthorized settings access is forbidden', async () => {
 it('empty settings returns 404', async () => {
 	const res = await worker.fetch(
 		new Request(makeUrl('/v1/settings'), {
-			method: 'GET',
 			headers: { authorization: btoa('testing_secret:TESTING_USER') },
 		}),
 		env,
@@ -42,7 +41,6 @@ it('settings are saved', async () => {
 
 	const getRes = await worker.fetch(
 		new Request(makeUrl('/v1/settings'), {
-			method: 'GET',
 			headers: { authorization: btoa('testing_secret:TESTING_USER') },
 		}),
 		env,
@@ -60,7 +58,6 @@ it('empty settings are rejected', async () => {
 	const putRes = await worker.fetch(
 		new Request(makeUrl('/v1/settings'), {
 			method: 'PUT',
-			body: null,
 			headers: {
 				'content-type': 'application/octet-stream',
 				'authorization': btoa('testing_secret:TESTING_USER'),
@@ -126,10 +123,9 @@ it('if-none-match header is observed', async () => {
 
 	const getRes = await worker.fetch(
 		new Request(makeUrl('/v1/settings'), {
-			method: 'GET',
 			headers: {
 				'authorization': btoa('testing_secret:TESTING_USER'),
-				'if-none-match': `${written}`,
+				'if-none-match': String(written),
 			},
 		}),
 		env,
@@ -139,10 +135,9 @@ it('if-none-match header is observed', async () => {
 
 	const getRes2 = await worker.fetch(
 		new Request(makeUrl('/v1/settings'), {
-			method: 'GET',
 			headers: {
 				'authorization': btoa('testing_secret:TESTING_USER'),
-				'if-none-match': `${written + 1}`,
+				'if-none-match': String(written + 1),
 			},
 		}),
 		env,
@@ -178,7 +173,6 @@ it('settings are deleted', async () => {
 
 	const checkRes = await worker.fetch(
 		new Request(makeUrl('/v1/settings'), {
-			method: 'GET',
 			headers: { authorization: btoa('testing_secret:TESTING_USER') },
 		}),
 		env,

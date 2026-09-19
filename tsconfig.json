@@ -2,7 +2,7 @@
 	"compilerOptions": {
 		"esModuleInterop": true,
 		"skipLibCheck": true,
-		"target": "es2022",
+		"target": "es2025",
 		"allowJs": true,
 		"resolveJsonModule": true,
 		"moduleDetection": "force",
@@ -12,9 +12,8 @@
 		"noUncheckedIndexedAccess": true,
 		"noImplicitOverride": true,
 		"module": "preserve",
-		"lib": ["es2022"],
+		"lib": ["es2025"],
 		"noEmit": true,
-		"types": ["@cloudflare/workers-types"],
 		"paths": {
 			"~/*": ["./src/*"]
 		}

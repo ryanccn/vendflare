@@ -3,13 +3,11 @@ import { build } from 'esbuild';
 import { bold } from 'kleur/colors';
 import { x } from 'tinyexec';
 
-import { readdir, rm, writeFile } from 'node:fs/promises';
-import { join } from 'node:path';
+import { rm, mkdir, writeFile } from 'node:fs/promises';
 
 try {
-	for (const f of await readdir('dist')) {
-		await rm(join('dist', f));
-	}
+	await rm('dist', { recursive: true, force: true });
+	await mkdir('dist');
 } catch (error: unknown) {
 	if (!(error instanceof Error && typeof error.message.includes('ENOENT'))) {
 		throw error;

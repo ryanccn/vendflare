@@ -1,7 +1,7 @@
 import { env } from 'cloudflare:workers';
 
 export const makeUrl = (path: string) =>
-	new URL(path, 'https://test.vendflare.local/').toString();
+	new URL(path, 'https://test.vendflare.local/').href;
 
 export const setupTestingUser = async () => {
 	await env.DB.prepare('INSERT INTO secrets (user_id, secret) VALUES (?, ?)')
