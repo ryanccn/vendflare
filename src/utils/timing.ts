@@ -4,7 +4,6 @@ import { startTime as honoStartTime, endTime as honoEndTime } from 'hono/timing'
 const timingLabels = {
 	auth: 'Authentication',
 	readSettings: 'Read settings',
-	compressData: 'Compress data',
 	receiveBuffer: 'Receive buffer',
 	decompressData: 'Decompress data',
 	writeSettings: 'Write settings',
@@ -13,7 +12,6 @@ const timingLabels = {
 	obtainDiscordToken: 'Obtain Discord token',
 	fetchUserInfo: 'Fetch user information',
 	obtainSecret: 'Attempt to obtain secret',
-	generateSecret: 'Generate new secret',
 } as const;
 
 export const startTime = <T extends keyof typeof timingLabels>(ctx: Context, name: T) => {

@@ -3,15 +3,17 @@ import { timing } from 'hono/timing';
 import { cors } from 'hono/cors';
 import { secureHeaders } from 'hono/secure-headers';
 
-import { auth, requireAuth } from './auth';
+import { requireAuth } from './auth';
+import { getOrCreateSecret } from './secrets';
 
-import { inflateSync as inflate, deflateSync as deflate } from 'fflate';
-
-import { uint8ArrayToHex } from 'uint8array-extras';
+import { compress, decompress } from './utils/compression';
+import { isAllowedUser } from './utils/allowlist';
 import { poweredBy } from './utils/poweredBy';
 
 import type { Env } from './env';
 import { endTime, startTime } from './utils/timing';
+
+const MAX_DECOMPRESSED_SIZE = 2_000_000;
 
 const app = new Hono<Env>();
 
@@ -27,14 +29,10 @@ app.use(poweredBy);
 app.use(secureHeaders());
 app.use(timing());
 
-app.use(auth);
-
 app.get('/', (c) => c.redirect(c.env.ROOT_REDIRECT || 'https://github.com/ryanccn/vendflare', 302));
 
-app.use('/v1/settings', requireAuth);
-
-app.get('/v1/settings', async (ctx) => {
-	const userId = ctx.get('userId')!;
+app.get('/v1/settings', requireAuth, async (ctx) => {
+	const userId = ctx.get('userId');
 
 	startTime(ctx, 'readSettings');
 
@@ -56,16 +54,11 @@ app.get('/v1/settings', async (ctx) => {
 	ctx.header('content-type', 'application/octet-stream');
 	ctx.header('etag', settings.written.toString());
 
-	startTime(ctx, 'compressData');
-	const settingsData = new TextEncoder().encode(settings.value);
-	const compressedSettings = deflate(settingsData);
-	endTime(ctx, 'compressData');
-
-	return ctx.body(compressedSettings);
+	return ctx.body(compress(settings.value));
 });
 
-app.put('/v1/settings', async (ctx) => {
-	const userId = ctx.get('userId')!;
+app.put('/v1/settings', requireAuth, async (ctx) => {
+	const userId = ctx.get('userId');
 
 	if (ctx.req.header('content-type') !== 'application/octet-stream') {
 		return ctx.json({ error: 'Content type must be application/octet-stream' }, 400);
@@ -87,9 +80,19 @@ app.put('/v1/settings', async (ctx) => {
 	const now = Date.now();
 
 	startTime(ctx, 'decompressData');
-	const decompressed = inflate(new Uint8Array(rawData));
-	const value = new TextDecoder().decode(decompressed);
+
+	let value: string | null;
+	try {
+		value = await decompress(rawData, MAX_DECOMPRESSED_SIZE);
+	} catch {
+		return ctx.json({ error: 'Settings are not valid DEFLATE data' }, 400);
+	}
+
 	endTime(ctx, 'decompressData');
+
+	if (value === null) {
+		return ctx.json({ error: 'Settings are too large' }, 413);
+	}
 
 	startTime(ctx, 'writeSettings');
 
@@ -102,8 +105,8 @@ app.put('/v1/settings', async (ctx) => {
 	return ctx.json({ written: now });
 });
 
-app.delete('/v1/settings', async (ctx) => {
-	const userId = ctx.get('userId')!;
+app.delete('/v1/settings', requireAuth, async (ctx) => {
+	const userId = ctx.get('userId');
 
 	startTime(ctx, 'deleteSettings');
 
@@ -118,9 +121,8 @@ app.delete('/v1/settings', async (ctx) => {
 
 app.get('/v1', (c) => c.json({ ping: 'pong' }));
 
-app.delete('/v1/', requireAuth);
-app.delete('/v1/', async (ctx) => {
-	const userId = ctx.get('userId')!;
+app.delete('/v1/', requireAuth, async (ctx) => {
+	const userId = ctx.get('userId');
 
 	startTime(ctx, 'deleteData');
 
@@ -142,19 +144,17 @@ app.get('/v1/oauth/callback', async (ctx) => {
 		return ctx.json({ error: 'Missing code' }, 400);
 	}
 
-	const formData = new FormData();
-	formData.append('client_id', ctx.env.DISCORD_CLIENT_ID);
-	formData.append('client_secret', ctx.env.DISCORD_CLIENT_SECRET);
-	formData.append('grant_type', 'authorization_code');
-	formData.append('code', code);
-	formData.append('redirect_uri', ctx.env.DISCORD_REDIRECT_URI || defaultRedirectUri(ctx));
-	formData.append('scope', 'identify');
-
 	startTime(ctx, 'obtainDiscordToken');
 
 	const tokenRes = await fetch('https://discord.com/api/oauth2/token', {
 		method: 'POST',
-		body: formData,
+		body: new URLSearchParams({
+			client_id: ctx.env.DISCORD_CLIENT_ID,
+			client_secret: ctx.env.DISCORD_CLIENT_SECRET,
+			grant_type: 'authorization_code',
+			code,
+			redirect_uri: ctx.env.DISCORD_REDIRECT_URI || defaultRedirectUri(ctx),
+		}),
 	});
 
 	if (!tokenRes.ok) {
@@ -180,31 +180,13 @@ app.get('/v1/oauth/callback', async (ctx) => {
 
 	endTime(ctx, 'fetchUserInfo');
 
-	if (
-		ctx.env.ALLOWED_USERS
-		&& !ctx.env.ALLOWED_USERS.split(',').map((s) => s.trim()).includes(userId)
-	) {
+	if (!isAllowedUser(ctx.env.ALLOWED_USERS, userId)) {
 		return ctx.json({ error: 'Not whitelisted' }, 401);
 	}
 
 	startTime(ctx, 'obtainSecret');
-
-	let secret = await ctx.env.DB.prepare('SELECT secret FROM secrets WHERE user_id = ?')
-		.bind(userId)
-		.first<{ secret: string }>()
-		.then((row) => row?.secret);
-
+	const secret = await getOrCreateSecret(ctx.env.DB, userId);
 	endTime(ctx, 'obtainSecret');
-
-	if (!secret) {
-		const randValues = new Uint8Array(64);
-		crypto.getRandomValues(randValues);
-		secret = uint8ArrayToHex(randValues);
-
-		await ctx.env.DB.prepare('INSERT INTO secrets (user_id, secret) VALUES (?, ?)')
-			.bind(userId, secret)
-			.run();
-	}
 
 	return ctx.json({ secret });
 });

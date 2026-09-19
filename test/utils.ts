@@ -9,4 +9,10 @@ export const setupTestingUser = async () => {
 		.run();
 };
 
+export const deflate = (text: string) =>
+	new Response(new Blob([text]).stream().pipeThrough(new CompressionStream('deflate-raw'))).arrayBuffer();
+
+export const inflate = (res: Response) =>
+	new Response(res.body!.pipeThrough(new DecompressionStream('deflate-raw'))).text();
+
 export { default as worker } from '../src/index';

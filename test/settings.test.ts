@@ -1,8 +1,7 @@
 import { it, expect } from 'vitest';
 import { env } from 'cloudflare:workers';
 
-import { makeUrl, worker } from './utils';
-import { deflateSync, inflateSync } from 'fflate';
+import { deflate, inflate, makeUrl, worker } from './utils';
 
 it('unauthorized settings access is forbidden', async () => {
 	const res = await worker.fetch(
@@ -28,7 +27,7 @@ it('settings are saved', async () => {
 	const putRes = await worker.fetch(
 		new Request(makeUrl('/v1/settings'), {
 			method: 'PUT',
-			body: deflateSync(new TextEncoder().encode(JSON.stringify({ test: 'data' }))),
+			body: await deflate(JSON.stringify({ test: 'data' })),
 			headers: {
 				'content-type': 'application/octet-stream',
 				'authorization': btoa('testing_secret:TESTING_USER'),
@@ -49,7 +48,7 @@ it('settings are saved', async () => {
 	expect(getRes.ok).toBe(true);
 
 	// eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-	const data = JSON.parse(new TextDecoder().decode(inflateSync(new Uint8Array(await getRes.arrayBuffer()))));
+	const data = JSON.parse(await inflate(getRes));
 
 	expect(data).toStrictEqual({ test: 'data' });
 });
@@ -73,7 +72,7 @@ it('size limit is enforced', async () => {
 	const putRes = await worker.fetch(
 		new Request(makeUrl('/v1/settings'), {
 			method: 'PUT',
-			body: deflateSync(new TextEncoder().encode(JSON.stringify({ test: 'data' }))),
+			body: await deflate(JSON.stringify({ test: 'data' })),
 			headers: {
 				'content-type': 'application/octet-stream',
 				'authorization': btoa('testing_secret:TESTING_USER'),
@@ -86,6 +85,38 @@ it('size limit is enforced', async () => {
 	);
 
 	expect(putRes.status).toBe(413);
+});
+
+it('decompressed size limit is enforced', async () => {
+	const putRes = await worker.fetch(
+		new Request(makeUrl('/v1/settings'), {
+			method: 'PUT',
+			body: await deflate('a'.repeat(2_000_001)),
+			headers: {
+				'content-type': 'application/octet-stream',
+				'authorization': btoa('testing_secret:TESTING_USER'),
+			},
+		}),
+		env,
+	);
+
+	expect(putRes.status).toBe(413);
+});
+
+it('invalid compressed data is rejected', async () => {
+	const putRes = await worker.fetch(
+		new Request(makeUrl('/v1/settings'), {
+			method: 'PUT',
+			body: new Uint8Array([0xFF, 0xFF, 0xFF]),
+			headers: {
+				'content-type': 'application/octet-stream',
+				'authorization': btoa('testing_secret:TESTING_USER'),
+			},
+		}),
+		env,
+	);
+
+	expect(putRes.status).toBe(400);
 });
 
 it('content-type is enforced', async () => {
@@ -108,7 +139,7 @@ it('if-none-match header is observed', async () => {
 	const putRes = await worker.fetch(
 		new Request(makeUrl('/v1/settings'), {
 			method: 'PUT',
-			body: deflateSync(new TextEncoder().encode(JSON.stringify({ test: 'data' }))),
+			body: await deflate(JSON.stringify({ test: 'data' })),
 			headers: {
 				'content-type': 'application/octet-stream',
 				'authorization': btoa('testing_secret:TESTING_USER'),
@@ -150,7 +181,7 @@ it('settings are deleted', async () => {
 	const putRes = await worker.fetch(
 		new Request(makeUrl('/v1/settings'), {
 			method: 'PUT',
-			body: deflateSync(new TextEncoder().encode(JSON.stringify({ test: 'data' }))),
+			body: await deflate(JSON.stringify({ test: 'data' })),
 			headers: {
 				'content-type': 'application/octet-stream',
 				'authorization': btoa('testing_secret:TESTING_USER'),

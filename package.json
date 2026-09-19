@@ -13,9 +13,7 @@
 		"types": "wrangler types src/worker-configuration.d.ts"
 	},
 	"dependencies": {
-		"fflate": "^0.8.3",
-		"hono": "^4.13.8",
-		"uint8array-extras": "^1.5.0"
+		"hono": "^4.13.8"
 	},
 	"devDependencies": {
 		"@cloudflare/vitest-pool-workers": "^0.22.0",

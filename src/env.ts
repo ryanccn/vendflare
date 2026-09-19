@@ -10,11 +10,6 @@ export type Bindings = {
 	ROOT_REDIRECT?: string;
 };
 
-export type Variables = {
-	userId: string | null;
-};
-
 export type Env = {
 	Bindings: Bindings;
-	Variables: Variables;
 };

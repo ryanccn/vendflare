@@ -79,6 +79,35 @@ it('disallowed user secret results in failure', async () => {
 	expect(res.status).toBe(401);
 });
 
+it('empty secret for user without a secret results in failure', async () => {
+	const res = await worker.fetch(
+		new Request(makeUrl('/v1/settings'), {
+			headers: { Authorization: btoa(':USER_WITHOUT_SECRET') },
+		}),
+		env,
+	);
+
+	expect(res.status).toBe(401);
+});
+
+it('allowed users list tolerates whitespace', async () => {
+	await env.DB.prepare('INSERT OR REPLACE INTO secrets (user_id, secret) VALUES (?, ?)')
+		.bind('ALLOWLIST_USER', 'allowlist_secret')
+		.run();
+
+	const res = await worker.fetch(
+		new Request(makeUrl('/v1/settings'), {
+			headers: { Authorization: btoa('allowlist_secret:ALLOWLIST_USER') },
+		}),
+		{
+			...env,
+			ALLOWED_USERS: 'OTHER_USER, ALLOWLIST_USER',
+		},
+	);
+
+	expect(res.status).toBe(404);
+});
+
 describe('Discord authorization flow', () => {
 	it('succeeds with existing user', async () => {
 		server.use(
@@ -129,6 +158,25 @@ describe('Discord authorization flow', () => {
 		);
 
 		expect(res2.ok).toBe(true);
+	});
+
+	it('concurrent logins for a new user return the same secret', async () => {
+		server.use(
+			http.post('https://discord.com/api/oauth2/token', () => HttpResponse.json({ access_token: 'abcde' })),
+			http.get('https://discord.com/api/users/@me', () => HttpResponse.json({ id: 'TESTING_USER_3' })),
+		);
+
+		const responses = await Promise.all([
+			worker.fetch(new Request(makeUrl('/v1/oauth/callback?code=__test_code')), env),
+			worker.fetch(new Request(makeUrl('/v1/oauth/callback?code=__test_code')), env),
+		]);
+
+		expect(responses.every((res) => res.ok)).toBe(true);
+
+		const [a, b] = await Promise.all(responses.map((res) => res.json<{ secret: string }>()));
+
+		expect(a!.secret).toBeTypeOf('string');
+		expect(a!.secret).toBe(b!.secret);
 	});
 
 	it('fails without code', async () => {

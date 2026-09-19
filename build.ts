@@ -5,14 +5,8 @@ import { x } from 'tinyexec';
 
 import { rm, mkdir, writeFile } from 'node:fs/promises';
 
-try {
-	await rm('dist', { recursive: true, force: true });
-	await mkdir('dist');
-} catch (error: unknown) {
-	if (!(error instanceof Error && typeof error.message.includes('ENOENT'))) {
-		throw error;
-	}
-}
+await rm('dist', { recursive: true, force: true });
+await mkdir('dist');
 
 const revision = await x('git', ['rev-parse', '--short', 'HEAD']).then((p) => p.stdout.trim());
 
