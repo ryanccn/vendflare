@@ -16,7 +16,7 @@ jobs:
 
     steps:
       - name: Checkout repository
-        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # ratchet:actions/checkout@v6
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # ratchet:actions/checkout@v6
 
       - name: Setup and install dependencies
         uses: pnpm/setup@703c52620218391530e48b9e8870d5c0082e1b9b # ratchet:pnpm/setup@v2
@@ -34,7 +34,7 @@ jobs:
         run: pnpm dlx @ryanccn/sarif-strip-suppressed /tmp/lint.sarif
 
       - name: Upload results
-        uses: github/codeql-action/upload-sarif@7211b7c8077ea37d8641b6271f6a365a22a5fbfa # ratchet:github/codeql-action/upload-sarif@v4.36.0
+        uses: github/codeql-action/upload-sarif@b96794f015dfd88f77b49b1c93e0fa7110f94c63 # ratchet:github/codeql-action/upload-sarif@v4.38.0
         with:
           sarif_file: /tmp/lint.sarif
           wait-for-processing: true

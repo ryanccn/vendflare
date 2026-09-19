@@ -15,7 +15,7 @@ jobs:
 
     steps:
       - name: Checkout repository
-        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # ratchet:actions/checkout@v6
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # ratchet:actions/checkout@v6
 
       - name: Setup and install dependencies
         uses: pnpm/setup@703c52620218391530e48b9e8870d5c0082e1b9b # ratchet:pnpm/setup@v2
@@ -29,6 +29,6 @@ jobs:
         run: pnpm run test --run --coverage
 
       - name: Upload coverage reports to Codecov
-        uses: codecov/codecov-action@e79a6962e0d4c0c17b229090214935d2e33f8354 # ratchet:codecov/codecov-action@v6
+        uses: codecov/codecov-action@303a32d7a59b442fa8d48b6a1cc6825c09c847a5 # ratchet:codecov/codecov-action@v6
         with:
           token: ${{ secrets.CODECOV_TOKEN }}
