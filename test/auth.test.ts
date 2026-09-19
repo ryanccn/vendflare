@@ -90,6 +90,17 @@ it('empty secret for user without a secret results in failure', async () => {
 	expect(res.status).toBe(401);
 });
 
+it('secret for user without a secret results in failure', async () => {
+	const res = await worker.fetch(
+		new Request(makeUrl('/v1/settings'), {
+			headers: { Authorization: btoa('testing_secret:USER_WITHOUT_SECRET') },
+		}),
+		env,
+	);
+
+	expect(res.status).toBe(401);
+});
+
 it('allowed users list tolerates whitespace', async () => {
 	await env.DB.prepare('INSERT OR REPLACE INTO secrets (user_id, secret) VALUES (?, ?)')
 		.bind('ALLOWLIST_USER', 'allowlist_secret')
